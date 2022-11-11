@@ -158,6 +158,13 @@
 
     expected <- mean(fold_reg, na.rm = TRUE)
 
+
+    if(is.na(expected)) {
+
+      return(NA)
+
+    }
+
     if(expected == mu) {
 
       return(1)
@@ -177,97 +184,6 @@
     if(fail_n == 0) fail_n <- 1
 
     return(fail_n/n)
-
-  }
-
-# Mapping of reactions to gene identifiers -------
-
-#' Extract gene identifiers from a database.
-#'
-#' @description Extracts Entrez ID gene identifiers mapped to all reactions
-#' present in the given database SBML database.
-#' @details A wrapper around \code{\link[BiGGR]{extractGeneAssociations}}.
-#' Entrez ID identifier version is discarded silently. Reactions with
-#' non-Entrez ID features mapped are removed from the output and
-#' a parsing warning is raised.
-#' @return a data frame containing reaction ID ('react_id'),
-#' list of gene identifiers (entrez_id) and a list of expressions to be
-#' evaluated by at calculating reaction regulation estimates.
-#' @param database an object of class SBMLDocument.
-
-  extract_genes <- function(database) {
-
-    ## the entry control is done by the BiGGR function
-
-    gene_lst <- extractGeneAssociations(database)
-
-    ## getting rid of empty strings and
-
-    gene_lst <-
-      purrr::map(gene_lst,
-                 function(x) if(stringi::stri_detect_regex(x, pattern = '^\\s{1}$')) NULL else x)
-
-    gene_lst <- purrr::compact(gene_lst)
-
-    ## removing the leading spaces
-
-    gene_lst <- purrr::map(gene_lst,
-                           stringi::stri_replace_all_regex,
-                           pattern = '^\\s{1}',
-                           replacement = '')
-
-    ## extraction of the Entrez IDs
-
-    entrez_lst <- purrr::map(gene_lst,
-                             stringi::stri_extract_all_regex,
-                             pattern = '\\d+')
-
-    entrez_lst <- purrr::map(entrez_lst, unlist)
-
-    entrez_lst <- purrr::map(entrez_lst,
-                             stri_replace_all_regex,
-                             pattern = '\\.\\d+',
-                             replacement = '')
-
-    ## generating an expression list, warning at possible parsing errors
-    ## escaping the numbers
-
-    exp_lst <- purrr::map(gene_lst,
-                          stringi::stri_replace_all_fixed,
-                          pattern = 'and',
-                          replacement = '%AND%')
-
-    exp_lst <- purrr::map(exp_lst,
-                          stringi::stri_replace_all_fixed,
-                          pattern = 'or',
-                          replacement = '%OR%')
-
-    exp_lst <- purrr::map(exp_lst,
-                          escape_numbers)
-
-    exp_lst <- purrr::map(exp_lst,
-                          purrr::safely(str2lang))
-
-    parse_errors <- purrr::map(exp_lst, ~.x$error)
-
-    parse_errors <- purrr::compact(parse_errors)
-
-    if(length(parse_errors) > 0) {
-
-      warning(paste('There were', length(parse_errors), 'parsing errors.'),
-              call. = FALSE)
-
-    }
-
-    exp_lst <- purrr::map(exp_lst, ~.x$result)
-
-    exp_lst <- purrr::compact(exp_lst)
-
-    ## output
-
-    tibble::tibble(react_id = names(exp_lst),
-                   entrez_id = entrez_lst[names(exp_lst)],
-                   exprs = exp_lst)
 
   }
 

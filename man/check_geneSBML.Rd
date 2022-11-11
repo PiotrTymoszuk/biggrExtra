@@ -7,9 +7,9 @@
 check_geneSBML(react_id = NULL, metab_id = NULL, geneSBML)
 }
 \arguments{
-\item{react_id}{BiGG reaction ID, with or without the leading 'R_' string}
+\item{react_id}{BiGG reaction ID, with or without the leading 'R_' string.}
 
-\item{metab_id}{BiGG metabolite ID, with or without the leading 'M_' string}
+\item{metab_id}{BiGG metabolite ID, with or without the leading 'M_' string.}
 
 \item{geneSBML}{a geneSBML object.}
 }

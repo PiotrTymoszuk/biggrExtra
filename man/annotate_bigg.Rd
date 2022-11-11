@@ -26,7 +26,7 @@ Ignored if annotation_db is a data frame.}
 a vector with the requested features.
 }
 \description{
-Retrieves the requested metabolite or reaction feature from
+Retrieves the requested metabolite or reaction name from
 a local database given the BiGG ID as a key.
 }
 \details{

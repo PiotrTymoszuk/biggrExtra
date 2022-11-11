@@ -208,8 +208,8 @@
                          fdr = 'p_adjusted')
 
     p_lab <- switch(signif_type,
-                    raw = expression('-log'[10] * (' p')),
-                    fdr = expression('-log'[10] * (' pFDR')))
+                    raw = expression('-log'[10] * ' p'),
+                    fdr = expression('-log'[10] * ' pFDR'))
 
     if(label_names) {
 
@@ -395,7 +395,7 @@
         ggplot2::labs(title = 'Fold regulation and regulation error',
                       subtitle = plot_cap,
                       x = expression('log'[2] * ' fold regulation'),
-                      y = expression('log'[2] * 'regulation error'))
+                      y = expression('log'[2] * ' regulation error'))
 
       if(show_fit) {
 
@@ -736,7 +736,7 @@
     relevant.species <-
       ifelse(stringi::stri_detect(relevant.species, regex = '^M_'),
              relevant.species,
-             paste0('R_', relevant.species))
+             paste0('M_', relevant.species))
 
     relevant.reactions <-
       ifelse(stringi::stri_detect(relevant.reactions, regex = '^R_'),
@@ -745,7 +745,8 @@
 
     ## rates, suffixes and colors ------
 
-    rate_vec <- x$reg$fold_reg
+    rate_vec <- rlang::set_names(x$reg$fold_reg,
+                                 x$reg$react_id)
 
     suff_tbl <-
       dplyr::mutate(x$reg,
@@ -758,11 +759,17 @@
                                        'ns',
                                        ifelse(fold_reg > 1,
                                               'activated', 'inhibited')),
+                    color_var = ifelse(is.na(color_var), 'ns', color_var),
                     color_var = colors[color_var])
 
     if(suffixes == 'none') {
 
-      suff_vec <- NULL
+      suff_vec <- rlang::set_names(rep('', nrow(suff_tbl)),
+                                   suff_tbl$react_id)
+
+      suffix_sep <- ' '
+
+
 
     } else {
 

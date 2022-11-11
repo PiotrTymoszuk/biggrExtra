@@ -112,8 +112,20 @@
 
     if(length(miss_reactions) > 0) {
 
-      warning('Some of the relevant.reactions have no rates provided.
-              They will be skipped from the graph.',
+      if(length(miss_reactions) > 10) {
+
+        miss_lab <- paste(miss_reactions[1:10], collapse = ', ')
+
+        miss_lab <- paste0(miss_lab, ', ...')
+
+      } else {
+
+        miss_lab <- paste(miss_reactions, collapse = ', ')
+
+      }
+
+      warning(paste0('Some of the relevant.reactions have no rates provided: ',
+                     miss_lab, '\nThey will be skipped from the graph.'),
               call. = FALSE)
 
     }

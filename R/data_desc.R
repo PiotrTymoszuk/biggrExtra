@@ -60,3 +60,21 @@ NULL
 #' @name metabolites
 #' @usage data(metabolites)
 NULL
+
+# Corrected Recon2 model -------
+
+#' Corrected Recon2 SBML model.
+#'
+#' @description A version of the SBML Recon2 model provided
+#' by the BiGGR package with manual correction of errors in the gene association rules
+#' (detested for the reaction R_ATPS4m, slot: notes, missing parentheses,
+#' replacement with the rule from Recon1 model).
+#' @format SBML model
+#' @source BiGGR package, BiGGR database
+#' (http://bigg.ucsd.edu/models/RECON1/reactions/ATPS4m).
+#' @docType data
+#' @name Recon2D
+#' @usage data(Recon2D)
+NULL
+
+# END ------
