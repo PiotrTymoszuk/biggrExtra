@@ -13,7 +13,33 @@
 
   data("Recon2")
 
-  gene_info <- biggrExtra:::extract_genes(Recon2)
+  gene_info <- biggrExtra:::extract_genes(Recon2D)
+
+  gene_lst <- BiGGR::extractGeneAssociations(Recon2D)
+
+  gene_lst$R_ATPS4m
+
+  gene_info %>%
+    filter(react_id == 'R_ATPS4m') %>%
+    .$entrez_id
+
+# Patching of the Recon2D errors -------
+
+  #Recon2D <- Recon2
+
+  #atp_rule <- read_file('recon1_rule.txt') %>%
+    #stri_replace_all(fixed = '_AT', replacement = '.')
+
+  #atp_rule <- paste0('<p>GENE_ASSOCIATION: ',
+    #                 atp_rule,
+    #                 '</p>')
+
+  #Recon2D@model@reactions$R_ATPS4m@notes <-
+    #Recon2D@model@reactions$R_ATPS4m@notes %>%
+    #stri_replace(regex = '<p>GENE_ASSOCIATION:\\s{1}.*</p>',
+       #          replacement = atp_rule)
+
+  #save(Recon2D, file = './data/Recon2D.RData')
 
 # Expression regulation estimates and their errors------
 
@@ -37,7 +63,7 @@
 
   reco2_model <- build_geneSBML(x = de_vec,
                                 err = err_vec,
-                                database = Recon2,
+                                database = Recon2D,
                                 x_default = 1)
 
   plot(reco2_model, type = 'top', n_top = 20)
@@ -58,7 +84,7 @@
     scale_y_discrete(labels = annotate_bigg(reco2_model$reg$react_id,
                                             annotation_db = reco2_model))
 
-  annotate_bigg('R_A4GNT1g')
+  annotate_bigg('R_A4GNT1g', annotation_db = Recon2D)
 
   annotate_bigg('R_A4GNT1g', annotation_db = reco2_model)
 
@@ -93,40 +119,28 @@
 
   ## Baustelle!!!
 
-  #max_proc <- "R_NDPK1m - R_HEX1 - R_PFK - R_PGK + R_PYK"
+ # max_proc <- "R_ATPS4m + R_NDPK1m - R_HEX1 - R_PFK - R_PGK + R_PYK"
 
-  #check_geneSBML(c('R_ATPS4m', 'R_NDPK1m', 'R_HEX1', 'R_LACD', 'R_LDH_D'), reco2_model)
+  #check_geneSBML(c('R_ATPS4m', 'R_NDPK1m', 'R_HEX1', 'R_LACD', 'R_LDH_D'),
+             #    geneSBML = reco2_mc_model)
 
-  #ext_metabolites <- c('M_g6p_r')
+#  ext_metabolites <- c("M_glc_D_e", "M_lac_L_e", "M_ala_L_e",
+#                       "M_gln_L_e", "M_h2o_e", "M_co2_e",
+ #                      "M_o2_e", "M_h_e", "M_o2s_m",
+  #                     "M_adp_c", "M_atp_c", "M_pi_c",
+   #                    "M_h_c", "M_nadp_c", "M_nadph_c",
+    #                   "M_na1_c", "M_na1_e", "M_gln_L_c",
+     #                  "M_nh4_c", "M_pyr_e")
 
-  #fit(reco2_model,
-     # maximize = max_proc,
-      #externals = ext_metabolites,
-      #file.name = 'test.lim')
+#  check_geneSBML(metab_id = ext_metabolites,
+ #                geneSBML = reco2_mc_model)
 
-  #test_reg <- reco2_model$reg %>%
-    #top_n(10, fold_reg)
-
-  #createLIMFromSBML(reco2_model$model,
-                   # maximize = max_proc,
-                    #equations = as.list(test_reg[c(1, 2)]),
-                    #externals = ext_metabolites,
-                   # file.name = 'test.lim')
+  #fit(reco2_mc_model,
+   #   maximize = max_proc,
+    #  externals = ext_metabolites,
+     # file.name = 'test.lim')
 
   #test_rates <- getRates('test.lim')
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # drawing from a normal distribution ------
 
@@ -136,7 +150,7 @@
 
   reco2_mc_model <- build_geneSBML(x = de_vec,
                                    err = err_vec,
-                                   database = Recon2,
+                                   database = Recon2D,
                                    x_default = 1,
                                    err_method = 'mc',
                                    n_iter = 1000,
@@ -159,12 +173,19 @@
   reco2_mc_model$reg$lower_ci %>%
     range(na.rm = TRUE)
 
+  reco2_mc_model$reg %>%
+    filter(react_id == 'R_ATPS4m')
+
+  reco2_mc_model$gene_map %>%
+    filter(react_id == 'R_ATPS4m') %>%
+    .$entrez_id
+
 # Visualization ------
 
   test1 <-
     visualize(reco2_mc_model,
               rate_sep = ', ',
-              suffixes = 'error',
+              suffixes = 'none',
               suffix_sep = '\u00B1',
               signif_type = 'fdr',
               relevant.species = c("M_glc_D_c", "M_g6p_c", "M_f6p_c",
@@ -187,6 +208,7 @@
                                      'R_r0361', 'R_r0363', 'R_r0357'),
               layoutType = "dot",
               plt.margins = c(10, 50, 50, 10))
+
 
   plot(test1)
 
@@ -270,6 +292,65 @@
        line_alpha = 0.25) +
     facet_wrap(nrow = 3, facets = 'react_id') +
     theme(legend.position = 'none')
+
+
+# Gene, reaction and metabolite mapping -------
+
+  gene_annot <- react_to_gene(c("R_HEX1", "R_PGI", "R_PFK",
+                                "R_FBA", "R_TPI",
+                                "R_GAPD", "R_PGK", "R_PGM",
+                                "R_ENO", "R_PYK",
+                                "R_G6PDH2r", "R_PGL", "R_GND",
+                                "R_RPE", "R_RPI",
+                                "R_TKT1", "R_LDH_D", "R_LDH_Lm",
+                                "R_PDHm", "R_r0358", "R_r0364",
+                                'R_r0361', 'R_r0363', 'R_r0357'),
+                              reco2_mc_model)
+
+  react_annot <- gene_to_react(c('1738', '8050'), reco2_mc_model)
+
+  metab_annot <- react_to_metab(c("R_HEX1", "R_PGI", "R_PFK",
+                                  "R_FBA", "R_TPI",
+                                  "R_GAPD", "R_PGK", "R_PGM",
+                                  "R_ENO", "R_PYK",
+                                  "R_G6PDH2r", "R_PGL", "R_GND",
+                                  "R_RPE", "R_RPI",
+                                  "R_TKT1", "R_LDH_D", "R_LDH_Lm",
+                                  "R_PDHm", "R_r0358", "R_r0364",
+                                  'R_r0361', 'R_r0363', 'R_r0357'),
+                                exc_regex = '(^h_)|(^pi_)')
+
+# More real-life data ------
+
+  load('cxc_data.RData')
+
+  cxc_models <- cxc_data %>%
+    map(~build_geneSBML(x = set_names(.x$estimate,
+                                      .x$entrez_id),
+                        err = set_names(.x$error,
+                                        .x$entrez_id),
+                        database = Recon2D,
+                        or_fun = 'mean',
+                        and_fun = 'min',
+                        x_default = 1,
+                        err_method = 'mc',
+                        n_iter = 10,
+                        ci_method = 'perc',
+                        .parallel = FALSE))
+
+  cxc_models %>%
+    map(components, 'regulation') %>%
+    map(filter, react_id == 'R_ATPS4m')
+
+# New annotation functions -------
+
+  react_to_metab(c('R_ATPS4m', 'R_PFK'),
+                 detailed = TRUE)
+
+  extract_subsystems(Recon2, as_list = TRUE)
+
+
+
 
 
 # END -----
