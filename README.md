@@ -6,12 +6,14 @@ The package provides an user-fiendly interface between the gene expression data 
 
 __Installation__
 
+The package requires also a development package _microViz_ (https://github.com/PiotrTymoszuk/microViz). Make sure to install it first.
+
 ```
+devtools::install_github('PiotrTymoszuk/microViz') ## dependency microViz
+
 devtools::install_github('PiotrTymoszuk/biggrExtra')
 
 ```
-
-The package requires also a development package _microViz_ (https://github.com/PiotrTymoszuk/microViz). Make sure to install it first.
 
 __Acknowledgements__
 
