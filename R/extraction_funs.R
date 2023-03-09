@@ -116,11 +116,11 @@
 #' Extract subsystem assignment from a database.
 #'
 #' @description Extracts mapping of all or user-specified reactions to
-#' subsystems defines in the given database SBML database.
+#' subsystems defines in the given database SBML database or geneSBML model.
 #' @return if 'as_list' is set to FALSE a data frame with the reaction ID
 #' ('react_id') and subsystem variable ('subsystem').
 #' Otherwise a subsystem-named list of reaction ID vectors.
-#' @param database an object of class SBMLDocument.
+#' @param database an object of class SBMLDocument or class geneSBML.
 #' @param react_id BiGG reaction ID, with or without the leading 'R_' string.
 #' Defaults to NULL, which means that all reactions are mapped.
 #' @param as_list logical, should a list be returned? Defaults to FALSE.
@@ -134,8 +134,12 @@
 
     if(!'SBML' %in% class(database)) {
 
-      stop("'database' has to be a valid SBML Document class object.",
-           call. = FALSE)
+      if(!is_geneSBML(database)) {
+
+        stop("'database' has to be a valid SBML Document or a geneSBML class object.",
+             call. = FALSE)
+
+      }
 
     }
 
@@ -149,7 +153,17 @@
 
     ## mapping -------
 
-    model_notes <- purrr::map(database@model@reactions, ~.x@notes)
+    if(is_geneSBML(database)) {
+
+      reaction_lst <- database$model@reactions
+
+    } else {
+
+      reaction_lst <- database@model@reactions
+
+    }
+
+    model_notes <- purrr::map(reaction_lst, ~.x@notes)
 
     if(!is.null(react_id)) {
 

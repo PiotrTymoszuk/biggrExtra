@@ -7,7 +7,7 @@
 extract_subsystems(database, react_id = NULL, as_list = FALSE)
 }
 \arguments{
-\item{database}{an object of class SBMLDocument.}
+\item{database}{an object of class SBMLDocument or class geneSBML.}
 
 \item{react_id}{BiGG reaction ID, with or without the leading 'R_' string.
 Defaults to NULL, which means that all reactions are mapped.}
@@ -21,5 +21,5 @@ Otherwise a subsystem-named list of reaction ID vectors.
 }
 \description{
 Extracts mapping of all or user-specified reactions to
-subsystems defines in the given database SBML database.
+subsystems defines in the given database SBML database or geneSBML model.
 }

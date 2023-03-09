@@ -23,11 +23,13 @@ Imports:
     microViz,
     plyr,
     purrr,
+    rstatix, 
     stringi,
     tibble,
     tidyr
 Depends: 
     BiGGR,
-    generics
+    generics, 
+    dplyr
 RoxygenNote: 7.2.1
 Roxygen: list(markdown = TRUE)

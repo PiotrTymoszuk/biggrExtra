@@ -46,6 +46,12 @@
     gene_map <- dplyr::filter(res$gene_map,
                               react_id %in% reg$react_id)
 
+    sub_map <- extract_subsystems(database)
+
+    reg <- dplyr::left_join(reg,
+                            sub_map,
+                            by = 'react_id')
+
     geneSBML(model = buildSBMLFromReactionIDs(reaction.ids = reg$react_id,
                                               database = database),
              reg = reg,

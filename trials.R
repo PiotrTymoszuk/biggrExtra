@@ -347,11 +347,82 @@
   react_to_metab(c('R_ATPS4m', 'R_PFK'),
                  detailed = TRUE)
 
-  extract_subsystems(Recon2, as_list = TRUE)
+  extract_subsystems(Recon2, as_list = FALSE)
+
+# Enhanced output of the components and plot method ------
+
+  components(reco2_mc_model, type = 'gene_map')
+
+  components(reco2_mc_model, type = 'regulation')
+
+  components(reco2_mc_model, type = 'subsystems')
+
+  plot(reco2_mc_model,
+       type = 'bar',
+       relevant.reactions = c("R_HEX1", "R_PGI", "R_PFK",
+                              "R_FBA", "R_TPI",
+                              "R_GAPD", "R_PGK", "R_PGM",
+                              "R_ENO", "R_PYK",
+                              "R_G6PDH2r", "R_PGL", "R_GND",
+                              "R_RPE", "R_RPI",
+                              "R_TKT1", "R_LDH_D", "R_LDH_Lm",
+                              "R_PDHm", "R_r0358", "R_r0364",
+                              'R_r0361', 'R_r0363', 'R_r0357'),
+       label_names = TRUE,
+       order_reactions = TRUE)
+
+  plot(reco2_mc_model,
+       type = 'volcano',
+       relevant.reactions = c("R_HEX1", "R_PGI", "R_PFK",
+                              "R_FBA", "R_TPI",
+                              "R_GAPD", "R_PGK", "R_PGM",
+                              "R_ENO", "R_PYK",
+                              "R_G6PDH2r", "R_PGL", "R_GND",
+                              "R_RPE", "R_RPI",
+                              "R_TKT1", "R_LDH_D", "R_LDH_Lm",
+                              "R_PDHm", "R_r0358", "R_r0364",
+                              'R_r0361', 'R_r0363', 'R_r0357'),
+       label_names = TRUE,
+       order_reactions = TRUE)
 
 
+# Reaction counts and enrichment analysis for the subsystems -------
+
+  count(reco2_mc_model,
+        signif_type = 'fdr')
+
+  test_fisher_data <- reco2_mc_model %>%
+    suba(signif_type = 'fdr',
+         method = 'fisher',
+         .parallel = TRUE)
+
+  test_fisher_data %>%
+    filter(status == 'activated') %>%
+    ggplot(aes(x = frac_total,
+               y = -log10(p_adjusted))) +
+    geom_point() +
+    geom_hline(yintercept = -log10(0.05),
+               linetype = 'dashed')
+
+  test_fisher_data %>%
+    filter(p_adjusted < 0.05)
+
+  test_simulation_data <- reco2_mc_model %>%
+    suba(signif_type = 'fdr',
+         method = 'simulation',
+         n_iter = 1000,
+         .parallel = TRUE)
+
+  test_simulation_data %>%
+    filter(status == 'activated') %>%
+    ggplot(aes(x = frac_total,
+               y = -log10(p_adjusted))) +
+    geom_point() +
+    geom_hline(yintercept = -log10(0.05),
+               linetype = 'dashed')
+
+  test_simulation_data %>%
+    filter(p_adjusted < 0.05)
 
 
-
-# END -----
 

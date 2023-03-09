@@ -6,7 +6,7 @@
 \usage{
 \method{plot}{geneSBML}(
   x,
-  type = c("regulation", "errors", "top", "volcano", "forest", "top_forest", "mc"),
+  type = c("regulation", "errors", "top", "volcano", "forest", "bar", "top_forest", "mc"),
   relevant.reactions = components(x, "reactions"),
   n_top = 10,
   show_fit = TRUE,
@@ -14,9 +14,10 @@
   point_color = "black",
   point_alpha = 0.25,
   line_alpha = 1,
-  signif_type = c("raw", "fdr"),
+  signif_type = c("fdr", "raw"),
   regulation_level = 1,
   label_names = FALSE,
+  order_reactions = FALSE,
   cust_theme = ggplot2::theme_classic(),
   ...
 )
@@ -50,13 +51,18 @@ Ignored for other plot types.}
 Ignored for other plot types.}
 
 \item{signif_type}{significance to be plotted in Volcano or Forest plots:
-'raw' (default) or 'fdr' (FDR-corrected).}
+'raw' or 'fdr' (FDR-corrected, default).}
 
 \item{regulation_level}{fold-regulation level cutoff to be presented in
 Forest and Volcano plots, defaults to 1.}
 
 \item{label_names}{logical, should the reactions be labeled with their
 full names retrieved from the model? Defaults to FALSE.}
+
+\item{order_reactions}{logical, should the reactions be ordered in the plot
+by their regulation estimates? Applies only to the regulation bar plot
+and defaults to FALSE. If FALSE, the reactions are plotted as specified in
+'relavant.reactions'.}
 
 \item{cust_theme}{custom ggplot2 theme.}
 
@@ -83,6 +89,8 @@ along with 95\% confidence intervals for the top activated and
 inhibited reactions.
 The 'forest' option draws a Forest plot of regulation estimates
 along with 95\% confidence intervals.
+The 'bar' option generates a bar plot of regulation estimates with bar color
+coding for significance and regulation status.
 Finally, the type argument set to 'mc' draws Monte Carlo estimates of
 pathway regulation in subsequent runs; this options is available only for
 geneSBML model with errors estimated by the Monte Carlo method.

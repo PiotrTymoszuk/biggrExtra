@@ -6,7 +6,8 @@
 \usage{
 \method{components}{geneSBML}(
   object,
-  type = c("model", "regulation", "gene_map", "reactions", "metabolites", "genes"),
+  type = c("model", "regulation", "gene_map", "reactions", "metabolites", "genes",
+    "subsystems"),
   ...
 )
 }
@@ -27,5 +28,6 @@ reaction regulation estimates ('regulation'),
 gene mapping ('gene_map'),
 all reaction IDs ('reactions'),
 all metabolite IDs ('metabolites')
-and all gene IDs ('genes').
+all gene IDs ('genes') or a data frame
+with subsystem mapping ('subsystems').
 }
