@@ -439,7 +439,7 @@
                               'subsystem',
                               function(x) tibble::tibble(status = 'regulated',
                                                          n = sum(x$n),
-                                                         n_total = x$n[1]))
+                                                         n_total = x$n_total[1]))
 
     reg_counts <- purrr::map2_dfr(reg_counts,
                                   names(reg_counts),
