@@ -17,7 +17,7 @@ devtools::install_github('PiotrTymoszuk/biggrExtra')
 
 ## Terms of use
 
-The package is available under a [GPL-3 license](https://github.com/PiotrTymoszuk/clustTools/blob/main/LICENSE).
+The package is available under a [GPL-3 license](https://github.com/PiotrTymoszuk/biggrExtra/blob/main/LICENSE).
 
 
 ## Contact
