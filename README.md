@@ -15,6 +15,16 @@ devtools::install_github('PiotrTymoszuk/biggrExtra')
 
 ```
 
+## Terms of use
+
+The package is available under a [GPL-3 license](https://github.com/PiotrTymoszuk/clustTools/blob/main/LICENSE).
+
+
+## Contact
+
+The package maintainer is [Piotr Tymoszuk](mailto:piotr.s.tymoszuk@gmail.com).
+
+
 __Acknowledgements__
 
 Many thanks to the authors of Bioconductor's _BiGGR_ package, Anand K. Gavai and Hannes Hettling. In particular, code of their tool `sbml2hyperdraw()` was modified to accommodate hypergraphs.
