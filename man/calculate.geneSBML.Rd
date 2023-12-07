@@ -2,7 +2,7 @@
 % Please edit documentation in R/s3_oop.R
 \name{calculate.geneSBML}
 \alias{calculate.geneSBML}
-\title{Obtain reaction regulation rate.}
+\title{Reaction regulation rates.}
 \usage{
 \method{calculate}{geneSBML}(x, react_id = x$reg$react_id, ...)
 }
@@ -18,5 +18,5 @@ a data frame with reaction regulation estimates and, optionally,
 their errors.
 }
 \description{
-Extracts regulation rate and its error from and geneSBML object.
+Extracts regulation rates and their errors from and geneSBML object.
 }

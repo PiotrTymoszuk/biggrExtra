@@ -2,18 +2,23 @@
 
 # Class testing -----
 
-#' Test for the geneSBML class instance.
+#' Test for the geneSBML and SBML class instance.
 #'
-#' @description Tests whether the object is an instance of the geneSBML class.
+#' @description
+#' The function test whether the object is an instance of the geneSBML class
+#' or SBML class.
+#'
 #' @param x an object.
 #' @return a logical value.
+#'
 #' @export
 
-  is_geneSBML <- function(x) {
+  is_geneSBML <- function(x) inherits(x, 'geneSBML')
 
-    'geneSBML' %in% class(x)
+#' @rdname is_geneSBML
+#' @export
 
-  }
+  is_SBML <- function(x) inherits(x, 'SBML')
 
 # Appearance -----
 
@@ -27,7 +32,7 @@
   print.geneSBML <- function(x, ...) {
 
     cat(paste('A geneSBML object for', nrow(x$reg), 'reactions\n'))
-    print(x$model)
+    print(x$reg)
 
     invisible(NULL)
 
@@ -35,15 +40,16 @@
 
 # Calculating reaction rates ------
 
-#' Obtain reaction regulation rate.
+#' Reaction regulation rates.
 #'
-#' @description Extracts regulation rate and its error from and geneSBML object.
+#' @description
+#' Extracts regulation rates and their errors from and geneSBML object.
+#'
 #' @param x a geneSBML object.
 #' @param react_id a character vector of reaction IDs.
 #' @param ... extra arguments, currently none.
 #' @return a data frame with reaction regulation estimates and, optionally,
 #' their errors.
-#' @importFrom generics calculate
 #' @export calculate.geneSBML
 #' @export
 
@@ -51,7 +57,7 @@
 
     stopifnot(is_geneSBML(x))
 
-    dplyr::filter(x$reg, .data[['react_id']] %in% .env[['react_id']])
+    filter(x$reg, .data[['react_id']] %in% .env[['react_id']])
 
   }
 
@@ -59,19 +65,22 @@
 
 #' Extract geneSBML model components.
 #'
-#' @description Extracts the following geneSBML components:
-#' SBML model (type = 'model', default),
+#' @description
+#' Extracts the following geneSBML components:
+#' SBML model (`type = 'model'`, default),
 #' reaction regulation estimates ('regulation'),
 #' gene mapping ('gene_map'),
 #' all reaction IDs ('reactions'),
 #' all metabolite IDs ('metabolites')
 #' all gene IDs ('genes') or a data frame
 #' with subsystem mapping ('subsystems').
-#' @return the output specified by 'type' argument.
+#'
+#' @return the output specified by `type` argument.
+#'
 #' @param object a geneSBML object.
 #' @param type type of the output, see above.
 #' @param ... extra arguments, currently none.
-#' @importFrom generics components
+#'
 #' @export components.geneSBML
 #' @export
 
@@ -96,7 +105,7 @@
            gene_map = object$gene_map,
            reactions = object$reg$react_id,
            metabolites = names(object$model@species),
-           genes = purrr::reduce(object$gene_map$entrez_id, union),
+           genes = reduce(object$gene_map$entrez_id, union),
            subsystems = extract_subsystems(object, as_list = FALSE))
 
   }
@@ -105,11 +114,13 @@
 
 #' Plot features of a geneSBML object.
 #'
-#' @description Plots features of the geneSBML object as specified by the 'type'
-#' argument. For 'type' set to 'regulation' a bar plot of the
+#' @description
+#' Plots features of the geneSBML object as specified by the `type`
+#' argument.
+#' For `type` set to 'regulation' a bar plot of the
 #' regulation values is created, 'errors' returns a point plot of regulation
 #' estimates and regulation errors if errors can be retrieved from the model.
-#' For 'type' set to 'top' a bar plot with top up- and downregulated reactions
+#' For `type` set to 'top' a bar plot with top up- and downregulated reactions
 #' is returned.
 #' For 'volcano' a Volcano plot of raw or FDR-corrected p values and reaction
 #' regulation estimates is returned.
@@ -122,18 +133,20 @@
 #' coding for significance and regulation status.
 #' Finally, the type argument set to 'mc' draws Monte Carlo estimates of
 #' pathway regulation in subsequent runs; this options is available only for
-#' geneSBML model with errors estimated by the Monte Carlo method.
+#' geneSBML model with errors estimated by the Monte Carlo method without
+#' memory saving option.
+#'
 #' @return a ggplot2 graphic object.
+#'
 #' @param x an object of the geneSBML class.
-#' @param type type of the plot: 'regulation' (default), 'errors', 'top',
-#' 'volcano', 'top_forest' and 'forest', as specified above.
+#' @param type type of the plot, as specified above.
 #' @param relevant.reactions a vector of reaction IDs to be presented
 #' in the plots, defaults to all available reactions.
 #' @param n_top number of top up- and downregulated reactions to be plotted
 #' (type 'top' and 'forest') or top significant reactions to be labeled in
 #' the Volcano plot.
 #' @param show_fit logical, should a trend line be plotted? valid only for
-#' the error plots and ignored otherwise.
+#' error and regulation plots and ignored otherwise.
 #' @param point_size size of the points in the errors, Volcano or Forest plots.
 #' Ignored for other plot types'.
 #' @param point_color color of the points in the error plots.
@@ -158,6 +171,7 @@
 #' for Volcano: arguments passed to \code{\link[microViz]{plot_volcano}};
 #' for Forest plots: arguments passed to  \code{\link[microViz]{plot_top}} or
 #' \code{\link[microViz]{plot_forest}}.
+#'
 #' @export plot.geneSBML
 #' @export
 
@@ -195,6 +209,16 @@
     stopifnot(is.logical(label_names))
     stopifnot(is.numeric(line_alpha))
     stopifnot(is.logical(order_reactions))
+
+    fold_reg <- NULL
+    react_id <- NULL
+    reg_sign <- NULL
+    significant <- NULL
+    lower_ci <- NULL
+    upper_ci <- NULL
+    reg_split <- NULL
+    error <- NULL
+    run <- NULL
 
     type <- match.arg(type[1],
                       c('regulation',
@@ -245,6 +269,14 @@
 
     }
 
+    if(type == 'mc' & inherits(x, 'memoSaver')) {
+
+      stop(paste('Plots of Monte Carlo simulation results are not avalable",
+                  "for models with the memonry saving option.'),
+            call. = FALSE)
+
+    }
+
     ## plotting table ------
 
     plot_tbl <- dplyr::mutate(x$reg,
@@ -256,13 +288,13 @@
     if(!'error' %in% names(plot_tbl)) {
 
       plot_tbl <-
-        dplyr::mutate(plot_tbl,
-                      reg_sign = ifelse(fold_reg > log2(regulation_level),
-                                        'activated',
-                                        ifelse(fold_reg < -log2(regulation_level),
-                                               'inhibited', 'constant')),
-                      reg_sign = factor(reg_sign,
-                                        c('activated', 'inhibited', 'constant')))
+        mutate(plot_tbl,
+               reg_sign = ifelse(fold_reg > log2(regulation_level),
+                                 'activated',
+                                 ifelse(fold_reg < -log2(regulation_level),
+                                        'inhibited', 'constant')),
+               reg_sign = factor(reg_sign,
+                                 c('activated', 'inhibited', 'constant')))
 
       fill_vals <- c(activated = 'firebrick',
                      inhibited = 'steelblue',
@@ -271,21 +303,21 @@
     } else {
 
       plot_tbl <-
-        dplyr::mutate(plot_tbl,
-                      significant = ifelse(.data[[signif_var]] < 0.05,
-                                           'yes', 'no'),
-                      reg_sign = ifelse(significant == 'no',
-                                        'ns',
-                                        ifelse(fold_reg > log2(regulation_level),
-                                               'activated',
-                                               ifelse(fold_reg < -log2(regulation_level),
-                                                      'inhibited', 'ns'))),
-                      reg_sign = factor(reg_sign,
-                                        c('activated', 'inhibited', 'ns')),
-                      lower_ci = log2(lower_ci),
-                      upper_ci = log2(upper_ci),
-                      lower_ci = ifelse(is.nan(lower_ci), fold_reg, lower_ci),
-                      upper_ci = ifelse(is.nan(upper_ci), fold_reg, upper_ci))
+        mutate(plot_tbl,
+               significant = ifelse(.data[[signif_var]] < 0.05,
+                                    'yes', 'no'),
+               reg_sign = ifelse(significant == 'no',
+                                 'ns',
+                                 ifelse(fold_reg > log2(regulation_level),
+                                        'activated',
+                                        ifelse(fold_reg < -log2(regulation_level),
+                                               'inhibited', 'ns'))),
+               reg_sign = factor(reg_sign,
+                                 c('activated', 'inhibited', 'ns')),
+               lower_ci = log2(lower_ci),
+               upper_ci = log2(upper_ci),
+               lower_ci = ifelse(is.nan(lower_ci), fold_reg, lower_ci),
+               upper_ci = ifelse(is.nan(upper_ci), fold_reg, upper_ci))
 
       fill_vals <- c(activated = 'firebrick',
                      inhibited = 'steelblue',
@@ -297,41 +329,37 @@
 
     if(type == 'top') {
 
-      plot_tbl <- dplyr::filter(plot_tbl,
-                               fold_reg != 0)
-
-
+      plot_tbl <- filter(plot_tbl, fold_reg != 0)
 
       plot_tbl <-
-        dplyr::mutate(plot_tbl,
-                      reg_split = sign(fold_reg))
+        mutate(plot_tbl, reg_split = sign(fold_reg))
 
-      plot_tbl <- dplyr::group_by(plot_tbl, reg_split)
+      plot_tbl <- group_by(plot_tbl, reg_split)
 
-      plot_tbl <- dplyr::top_n(plot_tbl, n = n_top, abs(fold_reg))
+      plot_tbl <- top_n(plot_tbl, n = n_top, abs(fold_reg))
 
-      plot_tbl <- dplyr::ungroup(plot_tbl)
+      plot_tbl <- ungroup(plot_tbl)
 
       top_plot <-
-        ggplot2::ggplot(plot_tbl,
-                        ggplot2::aes(x = fold_reg,
-                                     y = reorder(react_id, fold_reg),
-                                     fill = reg_sign)) +
-        ggplot2::geom_vline(xintercept = 0,
-                            linetype = 'dashed') +
-        ggplot2::geom_bar(stat = 'identity',
-                          color = 'black') +
-        ggplot2::scale_fill_manual(values = fill_vals,
-                                   name = 'Reaction status') +
+        ggplot(plot_tbl,
+               aes(x = fold_reg,
+                   y = reorder(react_id, fold_reg),
+                   fill = reg_sign)) +
+        geom_vline(xintercept = 0,
+                   linetype = 'dashed') +
+        geom_bar(stat = 'identity',
+                 color = 'black') +
+        scale_fill_manual(values = fill_vals,
+                          name = 'Reaction status') +
         cust_theme +
-        ggplot2::theme(axis.title.y = element_blank()) +
-        ggplot2::labs(title = paste('Top', n_top, 'regulated reactions'),
-                      x = expression('log'[2] * ' fold regulation'))
+        theme(axis.title.y = element_blank()) +
+        labs(title = paste('Top', n_top, 'regulated reactions'),
+             x = expression('log'[2] * ' fold regulation'))
 
       if(label_names) {
 
         top_plot <- top_plot +
-          ggplot2::scale_y_discrete(labels = react_names)
+          scale_y_discrete(labels = react_names)
 
       }
 
@@ -346,13 +374,13 @@
     total_tag <- paste('reations: total: n =', total_pathways)
 
     reg_counts <-
-      dplyr::count(dplyr::filter(plot_tbl,
-                                 reg_sign %in% c('activated', 'inhibited')),
-                   reg_sign)
+      count(filter(plot_tbl,
+                   reg_sign %in% c('activated', 'inhibited')),
+            reg_sign)
 
-    reg_tag <- purrr::map2_chr(reg_counts[[1]],
-                               reg_counts[[2]],
-                               paste, sep = ': n = ')
+    reg_tag <- map2_chr(reg_counts[[1]],
+                        reg_counts[[2]],
+                        paste, sep = ': n = ')
 
     plot_cap = paste(total_tag,
                      paste(reg_tag, collapse = ', '),
@@ -363,21 +391,21 @@
     if(type == 'regulation') {
 
       reg_plot <-
-        ggplot2::ggplot(plot_tbl,
-                        ggplot2::aes(x = reorder(react_id, fold_reg),
+        ggplot(plot_tbl,
+                        aes(x = reorder(react_id, fold_reg),
                                      y = fold_reg)) +
-        ggplot2::geom_bar(aes(fill = reg_sign,
+        geom_bar(aes(fill = reg_sign,
                               color = reg_sign),
                           stat = 'identity') +
-        ggplot2::scale_fill_manual(values = fill_vals,
+        scale_fill_manual(values = fill_vals,
                                    name = 'Reaction status') +
-        ggplot2::scale_color_manual(values = fill_vals,
+        scale_color_manual(values = fill_vals,
                                     name = 'Reaction status') +
         cust_theme +
-        ggplot2::theme(axis.title.x = element_blank(),
+        theme(axis.title.x = element_blank(),
                        axis.text.x = element_blank(),
                        axis.ticks.x = element_blank()) +
-        ggplot2::labs(title = 'Reaction regulation',
+        labs(title = 'Reaction regulation',
                       subtitle = plot_cap,
                       y = expression('log'[2] * ' fold regulation'),
                       x = 'Reaction')
@@ -385,7 +413,7 @@
       if(show_fit) {
 
         reg_plot <- reg_plot +
-          ggplot2::geom_smooth(show.legend = FALSE, ...)
+          geom_smooth(show.legend = FALSE, ...)
 
       }
 
@@ -398,25 +426,25 @@
     if(type == 'errors') {
 
       err_plot <-
-        ggplot2::ggplot(plot_tbl,
-                        ggplot2::aes(x = fold_reg,
-                                     y = log2(error))) +
-        ggplot2::geom_vline(xintercept = 0,
-                            linetype = 'dashed') +
-        ggplot2::geom_point(shape = 16,
-                            size = point_size,
-                            color = point_color,
-                            alpha = point_alpha) +
+        ggplot(plot_tbl,
+               aes(x = fold_reg,
+                   y = log2(error))) +
+        geom_vline(xintercept = 0,
+                   linetype = 'dashed') +
+        geom_point(shape = 16,
+                   size = point_size,
+                   color = point_color,
+                   alpha = point_alpha) +
         cust_theme +
-        ggplot2::labs(title = 'Fold regulation and regulation error',
-                      subtitle = plot_cap,
-                      x = expression('log'[2] * ' fold regulation'),
-                      y = expression('log'[2] * ' regulation error'))
+        labs(title = 'Fold regulation and regulation error',
+             subtitle = plot_cap,
+             x = expression('log'[2] * ' fold regulation'),
+             y = expression('log'[2] * ' regulation error'))
 
       if(show_fit) {
 
         err_plot <- err_plot +
-          ggplot2::geom_smooth(show.legend = FALSE, ...)
+          geom_smooth(show.legend = FALSE, ...)
 
       }
 
@@ -430,7 +458,8 @@
 
       if(!'error' %in% names(plot_tbl)) {
 
-        warning('Volcano plots are available only for geneSBML objects with error estimates.',
+        warning(paste('Volcano plots are available only for',
+                      'geneSBML objects with error estimates.'),
                 call. = FALSE)
 
         return(NULL)
@@ -458,7 +487,8 @@
 
       if(!'error' %in% names(plot_tbl)) {
 
-        warning('Forest plots are available only for geneSBML objects with error estimates.',
+        warning(paste('Forest plots are available only for geneSBML',
+                      'objects with error estimates.'),
                 call. = FALSE)
 
         return(NULL)
@@ -485,7 +515,7 @@
       if(label_names) {
 
         forest_plot <- forest_plot +
-          ggplot2::scale_y_discrete(labels = react_names)
+          scale_y_discrete(labels = react_names)
 
       }
 
@@ -499,7 +529,8 @@
 
       if(!'error' %in% names(plot_tbl)) {
 
-        warning('Forest plots are available only for geneSBML objects with error estimates.',
+        warning(paste('Forest plots are available only for geneSBML objects',
+                      'with error estimates.'),
                 call. = FALSE)
 
         return(NULL)
@@ -524,7 +555,7 @@
       if(label_names) {
 
         forest_plot <- forest_plot +
-          ggplot2::scale_y_discrete(labels = react_names)
+          scale_y_discrete(labels = react_names)
 
       }
 
@@ -539,39 +570,39 @@
       if(order_reactions) {
 
         bar_plot <-
-          ggplot2::ggplot(plot_tbl,
-                          ggplot2::aes(x = fold_reg,
-                                       y = reorder(react_id, fold_reg),
-                                       fill = reg_sign))
+          ggplot(plot_tbl,
+                 aes(x = fold_reg,
+                     y = reorder(react_id, fold_reg),
+                     fill = reg_sign))
 
       } else {
 
-        plot_tbl <- dplyr::mutate(plot_tbl,
-                                  react_id = factor(react_id,
-                                                    relevant.reactions))
+        plot_tbl <- mutate(plot_tbl,
+                           react_id = factor(react_id,
+                                             relevant.reactions))
 
         bar_plot <-
-          ggplot2::ggplot(plot_tbl,
-                          ggplot2::aes(x = fold_reg,
-                                       y = react_id,
-                                       fill = reg_sign))
+          ggplot(plot_tbl,
+                 aes(x = fold_reg,
+                     y = react_id,
+                     fill = reg_sign))
 
       }
 
       bar_plot <- bar_plot +
-        ggplot2::geom_bar(stat = 'identity',
-                          color = 'black') +
-        ggplot2::scale_fill_manual(values = fill_vals,
-                                   name = 'Status') +
+        geom_bar(stat = 'identity',
+                 color = 'black') +
+        scale_fill_manual(values = fill_vals,
+                          name = 'Status') +
         cust_theme +
         theme(axis.title.y = element_blank()) +
-        ggplot2::labs(title = 'Reaction regulation estimates',
-                      x = expression('log'[2] * ' fold-regulation'))
+        labs(title = 'Reaction regulation estimates',
+             x = expression('log'[2] * ' fold-regulation'))
 
       if(label_names) {
 
         bar_plot <- bar_plot +
-          ggplot2::scale_y_discrete(labels = react_names)
+          scale_y_discrete(labels = react_names)
 
       }
 
@@ -595,30 +626,30 @@
 
       plot_tbl <- x$mc[, relevant.reactions]
 
-      plot_tbl <- dplyr::mutate(as.data.frame(plot_tbl),
-                                run = 1:nrow(plot_tbl))
+      plot_tbl <- mutate(as.data.frame(plot_tbl),
+                         run = 1:nrow(plot_tbl))
 
       plot_tbl <- tidyr::pivot_longer(plot_tbl,
-                                      cols = dplyr::all_of(relevant.reactions),
+                                      cols = all_of(relevant.reactions),
                                       names_to = 'react_id',
                                       values_to = 'fold_reg')
 
       run_plot <-
-        ggplot2::ggplot(plot_tbl,
-                        ggplot2::aes(x = run,
-                                     y = fold_reg,
-                                     color = react_id))  +
-        ggplot2::geom_line(ggplot2::aes(group = react_id),
-                           alpha = line_alpha) +
+        ggplot(plot_tbl,
+               aes(x = run,
+                   y = fold_reg,
+                   color = react_id))  +
+        geom_line(aes(group = react_id),
+                  alpha = line_alpha) +
         cust_theme +
-        ggplot2::labs(title = 'Reaction regulation, Monte Carlo simulation',
-                      y = 'Fold-regulation',
-                      x = 'MC iteration')
+        labs(title = 'Reaction regulation, Monte Carlo simulation',
+             y = 'Fold-regulation',
+             x = 'MC iteration')
 
       if(show_fit) {
 
         run_plot <- run_plot +
-          ggplot2::geom_smooth(se = FALSE, ...)
+          geom_smooth(se = FALSE, ...)
 
       }
 
@@ -632,10 +663,13 @@
 
 #' Count regulated reactions per subsystem.
 #'
-#' @description Computes counts of significantly activated, inhibited and
+#' @description
+#' Computes counts of significantly activated, inhibited and
 #' all reactions per subsystem.
+#'
 #' @return a data frame with reaction counts according
 #' to their regulation status.
+#'
 #' @param x an object of the geneSBML class.
 #' @param signif_type type of significance to be used for definition of
 #' regulated reactions:
@@ -644,7 +678,7 @@
 #' @param regulation_level fold-regulation level cutoff used for definition
 #' of regulated reactions.
 #' @param ... extra arguments, currently none.
-#' @importFrom dplyr count
+#'
 #' @export count.geneSBML
 #' @export
 
@@ -653,6 +687,9 @@
                              regulation_level = 1, ...) {
 
     ## entry control -------
+
+    fold_reg <- NULL
+    react_id <- NULL
 
     stopifnot(is_geneSBML(x))
     stopifnot(is.numeric(regulation_level))
@@ -664,68 +701,72 @@
                          raw = 'p_value',
                          fdr = 'p_adjusted')
 
-    reg_tbl <- dplyr::mutate(x$reg,
-                             fold_reg = log2(fold_reg))
+    reg_tbl <- mutate(x$reg, fold_reg = log2(fold_reg))
 
     ## definition of regulated reactions ------
 
     ### working with log2-transformation of the regulation estimates
     ### simplifies the coding
 
+    reg_sign <- NULL
+    significant <- NULL
+    subsystem <- NULL
+
     if(!'error' %in% names(reg_tbl)) {
 
       reg_tbl <-
-        dplyr::mutate(reg_tbl,
-                      reg_sign = ifelse(fold_reg > log2(regulation_level),
-                                        'activated',
-                                        ifelse(fold_reg < -log2(regulation_level),
-                                               'inhibited', 'constant')),
-                      reg_sign = factor(reg_sign,
-                                        c('activated', 'inhibited', 'constant')))
+        mutate(reg_tbl,
+               reg_sign = ifelse(fold_reg > log2(regulation_level),
+                                 'activated',
+                                 ifelse(fold_reg < -log2(regulation_level),
+                                        'inhibited', 'constant')),
+               reg_sign = factor(reg_sign,
+                                 c('activated', 'inhibited', 'constant')))
 
     } else {
 
       reg_tbl <-
-        dplyr::mutate(reg_tbl,
-                      significant = ifelse(.data[[signif_var]] < 0.05,
-                                           'yes', 'no'),
-                      reg_sign = ifelse(significant == 'no',
-                                        'ns',
-                                        ifelse(fold_reg > log2(regulation_level),
-                                               'activated',
-                                               ifelse(fold_reg < -log2(regulation_level),
-                                                      'inhibited', 'ns'))),
-                      reg_sign = factor(reg_sign,
-                                        c('activated', 'inhibited', 'ns')))
+        mutate(reg_tbl,
+               significant = ifelse(.data[[signif_var]] < 0.05,
+                                    'yes', 'no'),
+               reg_sign = ifelse(significant == 'no',
+                                 'ns',
+                                 ifelse(fold_reg > log2(regulation_level),
+                                        'activated',
+                                        ifelse(fold_reg < -log2(regulation_level),
+                                               'inhibited', 'ns'))),
+               reg_sign = factor(reg_sign,
+                                 c('activated', 'inhibited', 'ns')))
 
     }
 
     ## counting: all reactions and as per subsystem --------
 
-    all_counts <- dplyr::count(reg_tbl, reg_sign, .drop = FALSE)
+    n <- NULL
 
-    all_counts <- dplyr::mutate(all_counts, subsystem = 'All reactions')
+    all_counts <- count(reg_tbl, reg_sign, .drop = FALSE)
 
-    sub_counts <- dplyr::count(reg_tbl, subsystem, reg_sign, .drop = FALSE)
+    all_counts <- mutate(all_counts, subsystem = 'All reactions')
+
+    sub_counts <- count(reg_tbl, subsystem, reg_sign, .drop = FALSE)
 
     sub_counts <- rbind(all_counts, sub_counts)
 
     ## computing total reaction counts per subsystem
 
-    total_counts <- dplyr::group_by(sub_counts, subsystem)
+    total_counts <- group_by(sub_counts, subsystem)
 
-    total_counts <- dplyr::summarise(total_counts,
-                                     n_total = sum(n))
+    total_counts <- summarise(total_counts, n_total = sum(n))
 
     sub_counts <-
-      dplyr::left_join(sub_counts,
-                       total_counts,
-                       by = 'subsystem')
+      left_join(sub_counts,
+                total_counts,
+                by = 'subsystem')
 
     ## output -------
 
-    rlang::set_names(sub_counts[c('subsystem', 'reg_sign', 'n', 'n_total')],
-                     c('subsystem', 'status', 'n', 'n_total'))
+    set_names(sub_counts[c('subsystem', 'reg_sign', 'n', 'n_total')],
+              c('subsystem', 'status', 'n', 'n_total'))
 
   }
 
@@ -733,14 +774,17 @@
 
 #' Fit a LIM based on geneSBML gene regulation data.
 #'
-#' @description Fits a linear inverse model (LIM) to the SBML metabolic
+#' @description
+#' Fits a linear inverse model (LIM) to the SBML metabolic
 #' reaction network model and reaction regulation estimates stored in the
 #' geneSBML object.
 #' Technically, a wrapper around \code{\link[BiGGR]{createLIMFromSBML}} with an
 #' additional entry check. See the documentation of the genuine BiGGR function
 #' for details. Reaction regulation estimates are fed into the LIM as
 #' 'equations' argument.
+#'
 #' @return A model file with with extension ".lim" is created.
+#'
 #' @param object a geneSBML object.
 #' @param maximize a reaction or a series thereof to be maximized provided as
 #' a single string or a character vector. Each reaction specified has
@@ -751,7 +795,9 @@
 #' @param externals a character vector of metabolites for which the flux
 #' balance analysis (FBA) has to be performed.
 #' @param file.name a path and name of the LIM file.
-#' @importFrom generics fit
+#' @param ... extra arguments, currently none.
+#'
+#'
 #' @export fit.geneSBML
 #' @export
 
@@ -760,13 +806,20 @@
                            inequalities,
                            constraints,
                            externals,
-                           file.name = 'model.lim') {
+                           file.name = 'model.lim', ...) {
 
     ## entry control
 
     stopifnot(is_geneSBML(object))
 
-    max_reactions <- stringi::stri_extract_all(maximize, regex = 'R_\\w+')
+    if(inherits(object, 'memoSaver')) {
+
+      stop('Unable to construct LIM from a memory-saving model.',
+           call. = FALSE)
+
+    }
+
+    max_reactions <- stri_extract_all(maximize, regex = 'R_\\w+')
 
     max_reactions <- unlist(max_reactions)
 
@@ -790,18 +843,18 @@
     ## fitting the model
 
     reg_tbl <-
-      dplyr::filter(object$reg[c('react_id', 'fold_reg')],
-                    complete.cases(object$reg[c('react_id', 'fold_reg')]))
+      filter(object$reg[c('react_id', 'fold_reg')],
+             complete.cases(object$reg[c('react_id', 'fold_reg')]))
 
     eqn <- as.list(reg_tbl)
 
-    BiGGR::createLIMFromSBML(model = object$model,
-                             maximize = maximize,
-                             equations = eqn,
-                             inequalities = inequalities,
-                             constraints = constraints,
-                             externals = externals,
-                             file.name = file.name)
+    createLIMFromSBML(model = object$model,
+                      maximize = maximize,
+                      equations = eqn,
+                      inequalities = inequalities,
+                      constraints = constraints,
+                      externals = externals,
+                      file.name = file.name)
 
   }
 
@@ -809,9 +862,12 @@
 
 #' Create a hypergraph from a geneSBML object.
 #'
-#' @description Generates a hypergraph (instance of the 'RagraphBPH' class)
+#' @description
+#' Generates a hypergraph (instance of the 'RagraphBPH' class)
 #' for the requested reaction and metabolites.
-#' @details Technically, a wrapper around \code{\link[BiGGR]{sbml2hyperdraw}}.
+#'
+#' @details
+#' Technically, a wrapper around \code{\link[BiGGR]{sbml2hyperdraw}}.
 #' Rates for particular reactions and their errors are retrieved from the
 #' regulation table stored within the object.
 #' Reactions and their rates are presented in the edges. In addition, those
@@ -819,6 +875,7 @@
 #' confidence intervals or p values.
 #' Edge width corresponds to absolute log~2~ fold regulation. The edge color is
 #' specified by raw or FDR-corrected significance and the regulation sign.
+#'
 #' @param x a geneSBML object.
 #' @param rate_sep a character separating the reaction identifier
 #' and its regulation rate in the graph.
@@ -851,7 +908,8 @@
 #' (in case long node or edge labels fall outside the plotting region).
 #' Defaults to c(150,150,150,150).
 #' @param ... extra arguments, currently none.
-#' @importFrom generics visualize
+#'
+#'
 #' @export visualize.geneSBML
 #' @export
 
@@ -878,6 +936,22 @@
 
     stopifnot(is_geneSBML(x))
 
+    if(inherits(x, 'memoSaver')){
+
+      stop('Unable to visualize metabolic pathways in a memory-saving model.',
+           call. = FALSE)
+
+    }
+
+    error <- NULL
+    lower_ci <- NULL
+    upper_ci <- NULL
+    p_value <- NULL
+    p_adjusted <- NULL
+    fold_reg <- NULL
+    color_var <- NULL
+
+
     suffixes <- match.arg(suffixes[1],
                           c('none', 'error',
                             'p_raw', 'p_fdr'))
@@ -899,38 +973,37 @@
     ## relevant species and metabolites ------
 
     relevant.species <-
-      ifelse(stringi::stri_detect(relevant.species, regex = '^M_'),
+      ifelse(stri_detect(relevant.species, regex = '^M_'),
              relevant.species,
              paste0('M_', relevant.species))
 
     relevant.reactions <-
-      ifelse(stringi::stri_detect(relevant.reactions, regex = '^R_'),
+      ifelse(stri_detect(relevant.reactions, regex = '^R_'),
              relevant.reactions,
              paste0('R_', relevant.reactions))
 
     ## rates, suffixes and colors ------
 
-    rate_vec <- rlang::set_names(x$reg$fold_reg,
-                                 x$reg$react_id)
+    rate_vec <- set_names(x$reg$fold_reg, x$reg$react_id)
 
     suff_tbl <-
-      dplyr::mutate(x$reg,
-                    error = signif(error, signif_digits),
-                    ci = paste0('(', signif(lower_ci, signif_digits),
-                                ' - ', signif(upper_ci, signif_digits), ')'),
-                    p_raw = signif(p_value, signif_digits),
-                    p_fdr = signif(p_adjusted, signif_digits),
-                    color_var = ifelse(.data[[signif_var]] >= 0.05,
-                                       'ns',
-                                       ifelse(fold_reg > 1,
-                                              'activated', 'inhibited')),
-                    color_var = ifelse(is.na(color_var), 'ns', color_var),
-                    color_var = colors[color_var])
+      mutate(x$reg,
+             error = signif(error, signif_digits),
+             ci = paste0('(', signif(lower_ci, signif_digits),
+                         ' - ', signif(upper_ci, signif_digits), ')'),
+             p_raw = signif(p_value, signif_digits),
+             p_fdr = signif(p_adjusted, signif_digits),
+             color_var = ifelse(.data[[signif_var]] >= 0.05,
+                                'ns',
+                                ifelse(fold_reg > 1,
+                                       'activated', 'inhibited')),
+             color_var = ifelse(is.na(color_var), 'ns', color_var),
+             color_var = colors[color_var])
 
     if(suffixes == 'none') {
 
-      suff_vec <- rlang::set_names(rep('', nrow(suff_tbl)),
-                                   suff_tbl$react_id)
+      suff_vec <- set_names(rep('', nrow(suff_tbl)),
+                            suff_tbl$react_id)
 
       suffix_sep <- ' '
 
@@ -938,13 +1011,11 @@
 
     } else {
 
-      suff_vec <- rlang::set_names(suff_tbl[[suffixes]],
-                                   suff_tbl$react_id)
+      suff_vec <- set_names(suff_tbl[[suffixes]], suff_tbl$react_id)
 
     }
 
-    color_vec <- rlang::set_names(suff_tbl$color_var,
-                                  suff_tbl$react_id)
+    color_vec <- set_names(suff_tbl$color_var, suff_tbl$react_id)
 
     ## graph object
 

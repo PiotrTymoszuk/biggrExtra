@@ -15,7 +15,7 @@ Defaults to NULL, which means that all reactions are mapped.}
 \item{as_list}{logical, should a list be returned? Defaults to FALSE.}
 }
 \value{
-if 'as_list' is set to FALSE a data frame with the reaction ID
+if \code{as_list} is set to FALSE a data frame with the reaction ID
 ('react_id') and subsystem variable ('subsystem').
 Otherwise a subsystem-named list of reaction ID vectors.
 }

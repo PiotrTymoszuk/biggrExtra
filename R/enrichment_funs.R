@@ -6,17 +6,23 @@
 #' Test for enrichment of significantly regulated reactions
 #' in metabolic subsystems.
 #'
-#' @description Tests for enrichment of significantly regulated reactions
+#' @description
+#' Tests for enrichment of significantly regulated reactions
 #' within metabolic subsystems. This is done with one of two methods:
 #' 'fisher' using Fisher's exact test or 'simulation' where the observed
 #' enrichment is compared with random draws from the reaction set.
-#' @details Technically, Fisher's tests are done with
-#' \code{\link[rstatix]{fisher_test}}. This method is much faster but biased
+#'
+#' @details
+#' Technically, Fisher's tests are done with
+#' \code{\link[rstatix]{fisher_test}}. This method is biased
 #' towards subsystems with multiple reactions mapped to them
 #' (like fatty acid oxidation).
-#' @return a data frame with subsystem name and testing results
+#'
+#' @return
+#' a data frame with subsystem name and testing results
 #' for regulated, activated and inhibited reactions
 #' as well as FDR-adjusted p values.
+#'
 #' @param model a geneSBML model.
 #' @param signif_type type of significance to be used for definition of
 #' regulated reactions:
@@ -30,9 +36,9 @@
 #' and must be one of "two.sided", "greater" or "less". Defaults to "greater".
 #' Applies only to the 'fisher' method.
 #' @param n_iter number of random draws from the reaction set.
-#' @param .parallel logical, should the computation be run in parallel?
-#' Defaults to FALSE.
+#' @param .parallel logical, should the analysis be run in parallel?
 #' @param ... extra arguments passed to \code{\link[rstatix]{fisher_test}}.
+#'
 #' @export
 
   suba <- function(model,
@@ -44,6 +50,8 @@
                    .parallel = FALSE, ...) {
 
     ## entry control ----------
+
+    subsystem <- NULL
 
     if(!is_geneSBML(model)) {
 
@@ -68,15 +76,13 @@
                         signif_type = signif_type,
                         regulation_level = regulation_level)
 
-    sub_counts <- dplyr::filter(sub_counts,
-                                subsystem != 'All reactions')
+    sub_counts <- filter(sub_counts, subsystem != 'All reactions')
 
     ## testing ------
 
     switch(method,
            fisher = sub_fisher(data = sub_counts,
-                               alternative = alternative,
-                               .parallel = .parallel, ...),
+                               alternative = alternative, ...),
            simulation = sub_simulation(model = model,
                                        signif_type = signif_type,
                                        regulation_level = regulation_level,

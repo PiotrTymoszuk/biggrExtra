@@ -7,7 +7,8 @@
 get_regulation(
   x,
   err = NULL,
-  database,
+  database = biggrExtra::Recon2D,
+  scale = c("identity", "log2", "log"),
   or_fun = c("mean", "median", "min", "max"),
   and_fun = c("min", "max", "mean", "median"),
   x_default = 1,
@@ -15,47 +16,65 @@ get_regulation(
   return_mc = FALSE,
   err_method = c("norm", "mc"),
   n_iter = 1000,
+  mc_estimate = c("mean", "median"),
+  burn_in = 0,
   ci_method = c("perc", "bca"),
   seed = NULL,
   .parallel = TRUE
 )
 }
 \arguments{
-\item{x}{a numeric vector with fold-regulation estimates (not log2!!!).
-Elements are named with Entrez IDs.}
+\item{x}{a numeric vector with fold-regulation estimates. Elements are named
+with Entrez IDs.}
 
-\item{err}{a numeric vector with an error estimate such as SD or SEM
-(not log2!!!), named with Entrez IDs.}
+\item{err}{a numeric vector with an error estimate such as SD or SEM, named
+with Entrez IDs.}
 
-\item{database}{an object of class SBMLDocument.}
+\item{database}{an object of class \code{SBMLDocument} providing the gene -
+reaction association rules.}
 
-\item{or_fun}{one of 'mean' (default), 'median', 'min' or 'max'. Specifies the name of
-the function used to handle the OR operator between the genes.}
+\item{scale}{specifies the scale of the provided expression regulation and
+error estimates.}
 
-\item{and_fun}{one of 'mean', 'median', 'min' (default) or 'max'. Specifies the name of
-the function used to handle the OR operator between the genes.}
+\item{or_fun}{one of 'mean' (default), 'median', 'min' or 'max'. Specifies
+the name of the function used to handle the \code{OR} operator between the genes in
+the association rule.}
 
-\item{x_default}{the default numeric value or NA for regulation of the genes
-present in the database and absent from the regulation data. If NA,
-the genes missing from x won't be included in subsequent SBML model creation.}
+\item{and_fun}{one of 'mean', 'median', 'min' (default) or 'max'. Specifies
+the name of the function used to handle the \code{OR} operator between the genes in
+the association rule.}
+
+\item{x_default}{the default numeric value or \code{NA} for regulation of the genes
+present in the database and absent from the regulation data. If \code{NA},
+the genes missing from x won't be included in subsequent SBML model.}
 
 \item{return_genes}{logical, should a data frame with assignment of the
-genes to reactions be returned? Defaults to FALSE.}
+genes to reactions be returned? Defaults to \code{FALSE}.}
 
 \item{return_mc}{logical, should all Monte Carlo-determined regulation
-estimates for reactions be returned? Defaults to FALSE.}
+estimates for reactions be returned? Defaults to \code{FALSE}.}
 
 \item{err_method}{specifies the method of calculation of errors for reactions
 as described in Details: 'norm' (from normal distribution, default) or
 'mc' (Monte Carlo simulation).}
 
-\item{n_iter}{number of iterations for the Monte carlo simulation of
+\item{n_iter}{number of iterations for the Monte Carlo simulation of
 the reaction errors.}
+
+\item{mc_estimate}{statistic used to compute the reaction activity estimate
+in Monte Carlo simulation: either mean or median over algorithm iterations.
+Ignored if no errors were provided or \code{err_method = 'norm'}.}
+
+\item{burn_in}{number of Monte Carlo iterations to be discarded prior to
+computation of activity estimates and activity regulation errors. Ignored
+if no errors were provided or \code{err_method = 'norm'}.}
 
 \item{ci_method}{method of calculation of confidence intervals:
 percentile ('perc', default) or BCA ('bca').}
 
-\item{seed}{a seed for the rangom number generator.}
+\item{seed}{a seed for the random number generator.}
+
+\item{.parallel}{logical, should th computation be run in parallel?}
 }
 \value{
 a data frame with the following variables: reaction identifiers
@@ -67,38 +86,5 @@ If return_genes is set to TRUE, a gene-mapping table is returned as well in
 a list with the fold regulation data frame.
 }
 \description{
-Computes regulation estimates for the reactions present
-in the database based on the regulation estimates for gene expression.
-As described in the seminal BiGGR package paper
-(DOI 10.1371/journal.pone.0119016), it is assumed that the change
-in gene expression corresponds directly to the magnitude of modulation of
-the pathway, e.g. two-fold increase in expression of an enzyme leads to a
-two-fold increase in activity of the respective pathway
-(gene - protein - reaction or GPR principle). In case, more genes
-are mapped to a given pathway, the fold regulation is computed accordingly
-to the logical operators between the genes.
-If a given reaction is not associate with any genes, its regulation estimate
-is set as specified by the x_default argument.
-If a vector with regulation estimate errors is provided, the cumulative error
-will be returned as well - see Details.
-}
-\details{
-Works in a comparable fashion to \code{\link[BiGGR]{gprMapping}}
-but considerably faster.
-When a vector of errors for gene regulation is provided, there are two ways
-to compute errors for the pathway regulation:
-\itemize{
-\item \strong{from the normal distribution}: the cumulative reaction error is
-calculated as a sum of errors for the genes mapped to the reaction,
-z statistic is computed as (fold-regulation - 1)/error,
-raw p values and 95\% confidence intervals are obtained from the theoretical
-distribution of z statistics and corrected for multiple testing with the
-FDR/Benjamini-Hochberg method.
-While this method is computationally fast, the error, t statistic,
-confidence intervals and p values are just raw estimates of significance.
-\item \strong{by Monte Carlo method}: this option is still pending.
-}
-}
-\references{
-Gavai et al. \url{https://doi.org/10.1371/journal.pone.0119016}.
+Intended for internal use, see: \code{\link{build_geneSBML}}.
 }

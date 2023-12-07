@@ -2,9 +2,12 @@
 % Please edit documentation in R/s3_oop.R
 \name{is_geneSBML}
 \alias{is_geneSBML}
-\title{Test for the geneSBML class instance.}
+\alias{is_SBML}
+\title{Test for the geneSBML and SBML class instance.}
 \usage{
 is_geneSBML(x)
+
+is_SBML(x)
 }
 \arguments{
 \item{x}{an object.}
@@ -13,5 +16,6 @@ is_geneSBML(x)
 a logical value.
 }
 \description{
-Tests whether the object is an instance of the geneSBML class.
+The function test whether the object is an instance of the geneSBML class
+or SBML class.
 }

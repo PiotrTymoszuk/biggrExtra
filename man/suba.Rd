@@ -36,8 +36,7 @@ Applies only to the 'fisher' method.}
 
 \item{n_iter}{number of random draws from the reaction set.}
 
-\item{.parallel}{logical, should the computation be run in parallel?
-Defaults to FALSE.}
+\item{.parallel}{logical, should the analysis be run in parallel?}
 
 \item{...}{extra arguments passed to \code{\link[rstatix]{fisher_test}}.}
 }
@@ -54,7 +53,7 @@ enrichment is compared with random draws from the reaction set.
 }
 \details{
 Technically, Fisher's tests are done with
-\code{\link[rstatix]{fisher_test}}. This method is much faster but biased
+\code{\link[rstatix]{fisher_test}}. This method is biased
 towards subsystems with multiple reactions mapped to them
 (like fatty acid oxidation).
 }

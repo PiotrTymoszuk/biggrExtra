@@ -6,7 +6,7 @@
 \usage{
 react_to_metab(
   react_id,
-  annotation_db = reactions,
+  annotation_db = biggrExtra::reactions,
   lead_str = TRUE,
   exc_regex = NULL,
   detailed = FALSE
@@ -15,8 +15,8 @@ react_to_metab(
 \arguments{
 \item{react_id}{BiGG reaction ID, with or without the leading 'R_' string.}
 
-\item{annotation_db}{an annotation data frame with
-the 'bigg_id' and 'reaction_string' variables.}
+\item{annotation_db}{an annotation data frame with the 'bigg_id' and
+'reaction_string' variables.}
 
 \item{lead_str}{logical, should the metabolite ID contain the leading 'M_'
 string? Defaults to TRUE.}

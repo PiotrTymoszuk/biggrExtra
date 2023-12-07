@@ -2,14 +2,17 @@
 % Please edit documentation in R/annotation_funs.R
 \name{annotate_bigg}
 \alias{annotate_bigg}
+\alias{check_geneSBML}
 \title{Retrieve metabolite or reaction features from a local BiGG database.}
 \usage{
 annotate_bigg(
   bigg_id,
   value = "name",
-  annotation_db = reactions,
+  annotation_db = biggrExtra::reactions,
   id_type = c("reaction", "metabolite")
 )
+
+check_geneSBML(react_id = NULL, metab_id = NULL, geneSBML)
 }
 \arguments{
 \item{bigg_id}{BiGG ID identifier of reactions or metabolites.
@@ -21,13 +24,24 @@ A character vector, with or without trailing 'R_' or 'M_' strings.}
 
 \item{id_type}{type of the identifier: reaction (default) or metabolite.
 Ignored if annotation_db is a data frame.}
+
+\item{react_id}{BiGG reaction ID, with or without the leading 'R_' string.}
+
+\item{metab_id}{BiGG metabolite ID, with or without the leading 'M_' string.}
+
+\item{geneSBML}{a geneSBML object.}
 }
 \value{
-a vector with the requested features.
+\code{annotate_bigg()}: a vector with the requested features.
+\code{check_geneSBML()}: a list of logical vectors logical vectors, each for
+the reactions and metabolite IDs, if both the reactions and metabolites
+are queried. Otherwise a named vector with logical values.
 }
 \description{
 Retrieves the requested metabolite or reaction name from
-a local database given the BiGG ID as a key.
+a local database or a model given the BiGG ID as a key (\code{annotate_bigg()})
+or checks if a reaction or a metabolite is present in a model
+(\code{check_geneSBML}).
 }
 \details{
 You may use the 'metabolites' or 'reactions' data sets provided

@@ -26,9 +26,6 @@ of regulated reactions.}
 \item{n_iter}{number of random draws from the reaction set.}
 
 \item{.parallel}{logical, should the computation be run in parallel?}
-
-\item{aggregate}{logical, should the results be aggregated
-to a single data frame?}
 }
 \description{
 Tests for enrichment of significantly regulated reactions

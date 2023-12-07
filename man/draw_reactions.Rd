@@ -9,7 +9,6 @@ draw_reactions(
   signif_type = c("fdr", "raw"),
   regulation_level = 1,
   n_iter = 1000,
-  aggregate = FALSE,
   .parallel = FALSE
 )
 }
@@ -26,13 +25,10 @@ of regulated reactions.}
 
 \item{n_iter}{number of random draws from the reaction set.}
 
-\item{aggregate}{logical, should the results be aggregated
-to a single data frame?}
-
 \item{.parallel}{logical, should the computation be run in parallel?}
 }
 \value{
-a list of data frames with counts of activated, inhibited
+a list of matrices with counts of activated, inhibited
 and regulated reactions in each subsystem.
 }
 \description{

@@ -19,11 +19,11 @@
 \item{...}{extra arguments, currently none.}
 }
 \value{
-the output specified by 'type' argument.
+the output specified by \code{type} argument.
 }
 \description{
 Extracts the following geneSBML components:
-SBML model (type = 'model', default),
+SBML model (\code{type = 'model'}, default),
 reaction regulation estimates ('regulation'),
 gene mapping ('gene_map'),
 all reaction IDs ('reactions'),

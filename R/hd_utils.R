@@ -4,12 +4,15 @@
 
 #' Generate a hypergraph of the SMBL model.
 #'
-#' @description Produces a hypergraph (an instance of 'RagraphBPH' class).
+#' @description
+#' Produces a hypergraph (an instance of 'RagraphBPH' class).
 #' The code was accommodated from \code{\link[BiGGR]{sbml2hyperdraw}} with
 #' few modifications allowing for labeling of confidence intervals,
 #' errors and significance.
+#'
 #' @return a hypergraph object of the 'RagraphBPH' class. Plotted
-#' conveniently with the plot() method.
+#' conveniently with the `plot()` method.
+#'
 #' @param model a SBML model.
 #' @param rates a named numeric vector with reaction regulation estimates
 #' (linear, not log2). The names should be reaction IDs compatible with the
@@ -57,6 +60,8 @@
                           plt.margins = c(150, 150, 150, 150)) {
 
     ## entry control -----
+
+    species <- NULL
 
     if(!'Model' %in% class(model)) {
 
@@ -234,7 +239,7 @@
     edgeDataDefaults(my.graph, 'lwd') <- 1
     edgeDataDefaults(my.graph, 'color') <- node_color
 
-    graphDataDefaults(my.graph, 'arrowLoc') <- 'end'
+    Rgraphviz::graphDataDefaults(my.graph, 'arrowLoc') <- 'end'
 
     ## customizing the graph -----
 
@@ -254,8 +259,7 @@
 
     if(!is.null(colors)) {
 
-      colors <- rlang::set_names(colors[old_rate_names],
-                                 names(rates))
+      colors <- set_names(colors[old_rate_names], names(rates))
 
     }
 

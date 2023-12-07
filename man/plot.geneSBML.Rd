@@ -25,8 +25,7 @@
 \arguments{
 \item{x}{an object of the geneSBML class.}
 
-\item{type}{type of the plot: 'regulation' (default), 'errors', 'top',
-'volcano', 'top_forest' and 'forest', as specified above.}
+\item{type}{type of the plot, as specified above.}
 
 \item{relevant.reactions}{a vector of reaction IDs to be presented
 in the plots, defaults to all available reactions.}
@@ -36,7 +35,7 @@ in the plots, defaults to all available reactions.}
 the Volcano plot.}
 
 \item{show_fit}{logical, should a trend line be plotted? valid only for
-the error plots and ignored otherwise.}
+error and regulation plots and ignored otherwise.}
 
 \item{point_size}{size of the points in the errors, Volcano or Forest plots.
 Ignored for other plot types'.}
@@ -76,11 +75,12 @@ for Forest plots: arguments passed to  \code{\link[microViz]{plot_top}} or
 a ggplot2 graphic object.
 }
 \description{
-Plots features of the geneSBML object as specified by the 'type'
-argument. For 'type' set to 'regulation' a bar plot of the
+Plots features of the geneSBML object as specified by the \code{type}
+argument.
+For \code{type} set to 'regulation' a bar plot of the
 regulation values is created, 'errors' returns a point plot of regulation
 estimates and regulation errors if errors can be retrieved from the model.
-For 'type' set to 'top' a bar plot with top up- and downregulated reactions
+For \code{type} set to 'top' a bar plot with top up- and downregulated reactions
 is returned.
 For 'volcano' a Volcano plot of raw or FDR-corrected p values and reaction
 regulation estimates is returned.
@@ -93,5 +93,6 @@ The 'bar' option generates a bar plot of regulation estimates with bar color
 coding for significance and regulation status.
 Finally, the type argument set to 'mc' draws Monte Carlo estimates of
 pathway regulation in subsequent runs; this options is available only for
-geneSBML model with errors estimated by the Monte Carlo method.
+geneSBML model with errors estimated by the Monte Carlo method without
+memory saving option.
 }

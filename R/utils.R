@@ -5,24 +5,27 @@
 
 #' Escape EntrezID in a string.
 #'
-#' @description Finds EntrezID in a string and escapes them with '``.
+#' @description
+#' Finds EntrezID in a string and escapes them with '``.
+#'
 #' @return a sting.
+#'
 #' @param str a string.
 
   escape_numbers <- function(str) {
 
     stopifnot(is.character(str))
 
-    numbs <- unlist(stringi::stri_extract_all(str, regex = '\\d+\\.\\d+'))
+    numbs <- unlist(stri_extract_all(str, regex = '\\d+\\.\\d+'))
 
     for(i in numbs) {
 
-      rpl <- stringi::stri_replace(i, regex = '\\.\\d+', replacement = '')
+      rpl <- stri_replace(i, regex = '\\.\\d+', replacement = '')
 
       str <-
-        stringi::stri_replace_first_fixed(str,
-                                          pattern = i,
-                                          replacement = paste0('`', rpl, '`'))
+        stri_replace_first_fixed(str,
+                                 pattern = i,
+                                 replacement = paste0('`', rpl, '`'))
 
     }
 
@@ -34,11 +37,14 @@
 
 #' Evaluate gene mapping rules.
 #'
-#' @description Evaluates a list of gene mapping rules stored as expression.
+#' @description
+#' Evaluates a list of gene mapping rules stored as expression.
 #' Such rules are retrieved from the SBML database e.g.
 #' with \code{\link{extract_genes}}.
+#'
 #' @return a numeric vector with the reaction regulation estimates.
 #' Named with reaction IDs.
+#'
 #' @param x a vector with gene regulation estimates named
 #' with Entrez ID identifiers.
 #' @param rule_exp a list of gene mapping rules.
@@ -58,9 +64,7 @@
                                        parent = parent_env)
 
 
-    purrr::map_dbl(rule_exp,
-                   eval,
-                   envir = eval_env)
+    map_dbl(rule_exp, eval, envir = eval_env)
 
 
   }
@@ -69,22 +73,29 @@
 
 #' Draw values from the gene regulation estimate distribution.
 #'
-#' @description Draws values from the gene regulation estimate
+#' @description
+#' Draws values from the gene regulation estimate
 #' normal distribution given the standard deviation and expected value.
-#' @param x a numeric vector with fold-regulation estimates (not log2!!!).
+#'
+#' @param x a numeric vector with fold-regulation estimates.
 #' Elements are named with Entrez IDs.
-#' @param err a numeric vector with an error estimate such as SD or SEM
-#' (not log2!!!), named with Entrez IDs.
+#' @param err a numeric vector with an error estimate such as SD or SEM,
+#' named with Entrez IDs.
 #' @param n number of values to be drawn.
+#' @param scale name of the scale of the provided regulation estimates and
+#' their errors: 'identity' (default), 'log2' or 'log'.
 #' @param seed seed of the random number generator.
-#' @param .parallel logical, should the function work in parallel? Works only if
-#' TRUE and a parallel backend compatible with furrr::future_map() is provided.
-#' @param return a list with n numeric values corresponding to the estimates,
-#' named with the Entrez IDs.
+#'
+#' @return a numeric matrix: genes are columns, theri regulation estimates are
+# rows.
 
-  draw_norm <- function(x, err, n, seed = NULL, .parallel = FALSE) {
+  draw_norm <- function(x,
+                        err,
+                        n,
+                        scale = c('identity', 'log2', 'log'),
+                        seed = NULL) {
 
-    ## entry control
+    ## entry control -----
 
     stopifnot(!is.null(names(x)))
     stopifnot((!is.null(names(err))))
@@ -92,9 +103,7 @@
     stopifnot(is.numeric(err))
     stopifnot(is.numeric(n))
 
-    n <- integer(n)
-
-    stopifnot(n < 1)
+    stopifnot(n > 1)
 
     cmm_genes <- intersect(names(x), names(err))
 
@@ -108,82 +117,28 @@
     x <- x[cmm_genes]
     err <- err[cmm_genes]
 
-    if(!is.null(seed)) {
+    scale <- match.arg(scale[1], c('identity', 'log2', 'log'))
 
-      set.seed(seed)
+    if(!is.null(seed)) set.seed(seed)
 
-    }
+    ## generating the distributions -----------
 
-    ## generating the distributions
+    distr_mtx <- drawNorm(mu = x,
+                          sd = err,
+                          n = n)
 
-    if(.parallel) {
+    dimnames(distr_mtx) <-
+      list(x = paste0('iter_', 1:n),
+           y = names(x))
 
-      distr_lst <-
-        furrr::future_map2(x, err,
-                           ~as.list(rnorm(n, mean = .x, sd = .y)),
-                           .options = furrr::furrr_options(seed = TRUE))
+    if(scale == 'identity') return(distr_mtx)
 
-    } else {
+    trans_fun <-
+      switch(scale,
+             log2 = function(x) 2^x,
+             log = exp)
 
-      distr_lst <- purrr::map2(x, err,
-                               ~as.list(rnorm(n, mean = .x, sd = .y)))
-
-    }
-
-    distr_lst <-
-      purrr::map(distr_lst,
-                 ~rlang::set_names(.x, paste0('draw_', 1:length(.x))))
-
-    distr_lst <- purrr::transpose(distr_lst)
-
-    purrr::map(distr_lst, unlist)
-
-  }
-
-# Testing of regulation significance -----
-
-#' Regulation significance based on MC simulation results.
-#'
-#' @description Tests for gene regulation significance based on
-#' Monte Carlo (MC) simulation results.
-#' @param fold_reg MC-simulated fold-regulation values.
-#' @param mu the reference value.
-#' @return a numeric p value.
-
-  test_mc <- function(fold_reg, mu = 1) {
-
-    fold_reg <- fold_reg[!is.na(fold_reg)]
-
-    n <- length(fold_reg)
-
-    expected <- mean(fold_reg, na.rm = TRUE)
-
-
-    if(is.na(expected)) {
-
-      return(NA)
-
-    }
-
-    if(expected == mu) {
-
-      return(1)
-
-    }
-
-    if(expected > mu) {
-
-      fail_n <- length(fold_reg[fold_reg <= mu])
-
-    } else {
-
-      fail_n <- length(fold_reg[fold_reg >= mu])
-
-    }
-
-    if(fail_n == 0) fail_n <- 1
-
-    return(fail_n/n)
+    trans_fun(distr_mtx)
 
   }
 
@@ -191,69 +146,59 @@
 
 #' Calculate reaction regulation estimated based on gene expression.
 #'
-#' @description Computes regulation estimates for the reactions present
-#' in the database based on the regulation estimates for gene expression.
-#' As described in the seminal BiGGR package paper
-#' (DOI 10.1371/journal.pone.0119016), it is assumed that the change
-#' in gene expression corresponds directly to the magnitude of modulation of
-#' the pathway, e.g. two-fold increase in expression of an enzyme leads to a
-#' two-fold increase in activity of the respective pathway
-#' (gene - protein - reaction or GPR principle). In case, more genes
-#' are mapped to a given pathway, the fold regulation is computed accordingly
-#' to the logical operators between the genes.
-#' If a given reaction is not associate with any genes, its regulation estimate
-#' is set as specified by the x_default argument.
-#' If a vector with regulation estimate errors is provided, the cumulative error
-#' will be returned as well - see Details.
-#' @details Works in a comparable fashion to \code{\link[BiGGR]{gprMapping}}
-#' but considerably faster.
-#' When a vector of errors for gene regulation is provided, there are two ways
-#' to compute errors for the pathway regulation:
-#' * __from the normal distribution__: the cumulative reaction error is
-#' calculated as a sum of errors for the genes mapped to the reaction,
-#' z statistic is computed as (fold-regulation - 1)/error,
-#' raw p values and 95% confidence intervals are obtained from the theoretical
-#' distribution of z statistics and corrected for multiple testing with the
-#' FDR/Benjamini-Hochberg method.
-#' While this method is computationally fast, the error, t statistic,
-#' confidence intervals and p values are just raw estimates of significance.
-#' * __by Monte Carlo method__: this option is still pending.
-#' @references Gavai et al. \url{https://doi.org/10.1371/journal.pone.0119016}.
-#' @return a data frame with the following variables: reaction identifiers
+#' @description
+#' Intended for internal use, see: \code{\link{build_geneSBML}}.
+#'
+#' @return
+#' a data frame with the following variables: reaction identifiers
 #' and the fold regulation estimates. If err is not NULL, an error estimate per
 #' reaction is included in the data frame as well along with the z statistic
 #' (fold-regulation/error), 95% confidence intervals and
 #' raw p-values (normal distribution) and FDR-corrected p-values.
 #' If return_genes is set to TRUE, a gene-mapping table is returned as well in
 #' a list with the fold regulation data frame.
-#' @param x a numeric vector with fold-regulation estimates (not log2!!!).
-#' Elements are named with Entrez IDs.
-#' @param err a numeric vector with an error estimate such as SD or SEM
-#' (not log2!!!), named with Entrez IDs.
-#' @param database an object of class SBMLDocument.
-#' @param or_fun one of 'mean' (default), 'median', 'min' or 'max'. Specifies the name of
-#' the function used to handle the OR operator between the genes.
-#' @param and_fun one of 'mean', 'median', 'min' (default) or 'max'. Specifies the name of
-#' the function used to handle the OR operator between the genes.
-#' @param x_default the default numeric value or NA for regulation of the genes
-#' present in the database and absent from the regulation data. If NA,
-#' the genes missing from x won't be included in subsequent SBML model creation.
+#'
+#' @param x a numeric vector with fold-regulation estimates. Elements are named
+#' with Entrez IDs.
+#' @param err a numeric vector with an error estimate such as SD or SEM, named
+#' with Entrez IDs.
+#' @param database an object of class `SBMLDocument` providing the gene -
+#' reaction association rules.
+#' @param scale specifies the scale of the provided expression regulation and
+#' error estimates.
+#' @param or_fun one of 'mean' (default), 'median', 'min' or 'max'. Specifies
+#' the name of the function used to handle the `OR` operator between the genes in
+#' the association rule.
+#' @param and_fun one of 'mean', 'median', 'min' (default) or 'max'. Specifies
+#' the name of the function used to handle the `OR` operator between the genes in
+#' the association rule.
+#' @param x_default the default numeric value or `NA` for regulation of the genes
+#' present in the database and absent from the regulation data. If `NA`,
+#' the genes missing from x won't be included in subsequent SBML model.
 #' @param return_genes logical, should a data frame with assignment of the
-#' genes to reactions be returned? Defaults to FALSE.
+#' genes to reactions be returned? Defaults to `FALSE`.
 #' @param return_mc logical, should all Monte Carlo-determined regulation
-#' estimates for reactions be returned? Defaults to FALSE.
+#' estimates for reactions be returned? Defaults to `FALSE`.
 #' @param err_method specifies the method of calculation of errors for reactions
 #' as described in Details: 'norm' (from normal distribution, default) or
 #' 'mc' (Monte Carlo simulation).
-#' @param n_iter number of iterations for the Monte carlo simulation of
+#' @param n_iter number of iterations for the Monte Carlo simulation of
 #' the reaction errors.
+#' @param mc_estimate statistic used to compute the reaction activity estimate
+#' in Monte Carlo simulation: either mean or median over algorithm iterations.
+#' Ignored if no errors were provided or `err_method = 'norm'`.
+#' @param burn_in number of Monte Carlo iterations to be discarded prior to
+#' computation of activity estimates and activity regulation errors. Ignored
+#' if no errors were provided or `err_method = 'norm'`.
 #' @param ci_method method of calculation of confidence intervals:
 #' percentile ('perc', default) or BCA ('bca').
-#' @param seed a seed for the rangom number generator.
+#' @param seed a seed for the random number generator.
+#' @param .parallel logical, should th computation be run in parallel?
 
   get_regulation <- function(x,
                              err = NULL,
-                             database,
+                             database = biggrExtra::Recon2D,
+                             scale = c('identity', 'log2', 'log'),
                              or_fun = c('mean', 'median', 'min', 'max'),
                              and_fun = c('min', 'max', 'mean', 'median'),
                              x_default = 1,
@@ -261,6 +206,8 @@
                              return_mc = FALSE,
                              err_method = c('norm', 'mc'),
                              n_iter = 1000,
+                             mc_estimate = c('mean', 'median'),
+                             burn_in = 0,
                              ci_method = c('perc', 'bca'),
                              seed = NULL,
                              .parallel = TRUE) {
@@ -269,7 +216,12 @@
 
     start_time <- Sys.time()
 
-    on.exit(future::plan('sequential'))
+    fold_reg <- NULL
+    error <- NULL
+    z <- NULL
+    p_value <- NULL
+
+    on.exit(plan('sequential'))
     on.exit(message(paste('Elapsed:', Sys.time() - start_time)), add = TRUE)
 
     if(!is.numeric(x)) {
@@ -286,11 +238,27 @@
 
     }
 
-    if(any(x < 0)) {
+    scale <- match.arg(scale[1], c('identity', 'log2', 'log'))
 
-      stop('All elements of x have to be > 0.
-           Are you sure, your values are in linear scale?',
-           call. = FALSE)
+    scale_fun <-
+      switch(scale,
+             identity = identity,
+             log2 = function(x) 2^x,
+             log = exp)
+
+    nat_x <- x
+
+    x <- scale_fun(x)
+
+    if(scale == 'identity') {
+
+      if(any(x < 0)) {
+
+        stop(paste('All elements of x have to be >= 0. Are you sure,',
+                   'your values are on the identity scale?'),
+             call. = FALSE)
+
+      }
 
     }
 
@@ -303,6 +271,9 @@
 
     n_iter <- as.integer(n_iter)
 
+    mc_estimate <- match.arg(mc_estimate[1], c('mean', 'median'))
+
+    stopifnot(is.numeric(burn_in))
     stopifnot(is.logical(return_genes))
     stopifnot(is.logical(return_mc))
 
@@ -328,12 +299,11 @@
                     mean = function(x, y) mean(c(x, y), na.rm = TRUE),
                     median = function(x, y) median(c(x, y), na.rm = TRUE))
 
-
-    all_genes <- purrr::reduce(gene_tbl$entrez_id, union)
+    all_genes <- reduce(gene_tbl$entrez_id, union)
 
     miss_genes <- all_genes[!all_genes %in% names(x)]
 
-    miss_gene_lst <- rlang::set_names(rep(x_default, length(miss_genes)),
+    miss_gene_lst <- set_names(rep(x_default, length(miss_genes)),
                                       miss_genes)
     fun_ev <-
       rlang::new_environment(data = c(list(`%AND%` = a_fun,
@@ -342,41 +312,47 @@
                                       as.list(miss_gene_lst)))
 
     ## serial evaluation: determination of regulation estimates ------
+    ## only in case there are no errors or errors computed from the normal
+    ## distribution
 
-    message('Calculation of reaction regulation estimates')
+    if(is.null(err) | err_method == 'norm') {
 
-    reg_lst <- eval_rule(x = x,
-                         rule_exp = gene_tbl$exprs,
-                         parent_env = fun_ev)
+      message('Calculation of reaction regulation estimates')
 
-    reg_tbl <- tibble::tibble(react_id = names(reg_lst),
-                              fold_reg = unlist(reg_lst))
+      reg_lst <- eval_rule(x = x,
+                           rule_exp = gene_tbl$exprs,
+                           parent_env = fun_ev)
 
-    reg_tbl <- dplyr::filter(reg_tbl, !is.na(fold_reg))
-    reg_tbl <- dplyr::filter(reg_tbl, !is.nan(fold_reg))
-    reg_tbl <- dplyr::filter(reg_tbl, !is.infinite(fold_reg))
+      reg_tbl <- tibble(react_id = names(reg_lst),
+                        fold_reg = unlist(reg_lst))
 
-    ## filling with the default value if a reaction is absent
-    ## from the regulation estimate table.
+      reg_tbl <- filter(reg_tbl, !is.na(fold_reg))
+      reg_tbl <- filter(reg_tbl, !is.nan(fold_reg))
+      reg_tbl <- filter(reg_tbl, !is.infinite(fold_reg))
 
-    all_reactions <- names(database@model@reactions)
+      ## filling with the default value if a reaction is absent
+      ## from the regulation estimate table.
 
-    miss_reactions <- all_reactions[!all_reactions %in% reg_tbl$react_id]
+      all_reactions <- names(database@model@reactions)
 
-    reg_tbl <- rbind(reg_tbl,
-                     tibble::tibble(react_id = miss_reactions,
-                                    fold_reg = x_default))
+      miss_reactions <- all_reactions[!all_reactions %in% reg_tbl$react_id]
 
-    if(is.null(err)) {
+      reg_tbl <- rbind(reg_tbl,
+                       tibble(react_id = miss_reactions,
+                              fold_reg = x_default))
 
-      if(!return_genes) {
+      if(is.null(err)) {
 
-        return(reg_tbl)
+        if(!return_genes) {
 
-      } else {
+          return(reg_tbl)
 
-        return(list(gene_map = gene_tbl,
-                    reg = reg_tbl))
+        } else {
+
+          return(list(gene_map = gene_tbl,
+                      reg = reg_tbl))
+
+        }
 
       }
 
@@ -398,11 +374,15 @@
 
     }
 
-    if(any(err < 0)) {
+    if(scale == 'identity') {
 
-      stop('All elements of err have to be > 0.
-           Are you sure, your values are in linear scale?',
-           call. = FALSE)
+      if(any(err < 0)) {
+
+        stop(paste('All elements of err have to be >= 0.',
+                   'Are you sure, your values are on the identity scale?'),
+             call. = FALSE)
+
+      }
 
     }
 
@@ -412,25 +392,27 @@
 
       message('Calulation of the errors: normal distribution')
 
-      err_lst <- purrr::map(gene_tbl$entrez_id, ~err[.x])
+      err <- scale_fun(err)
 
-      err_lst <- purrr::map(err_lst, sum, na.rm = TRUE)
+      err_lst <- map(gene_tbl$entrez_id, ~err[.x])
 
-      err_tbl <- tibble::tibble(react_id = names(err_lst),
-                                error = unlist(err_lst))
+      err_lst <- map(err_lst, sum, na.rm = TRUE)
 
-      err_tbl <- dplyr::filter(err_tbl, !is.na(error))
+      err_tbl <- tibble(react_id = names(err_lst),
+                        error = unlist(err_lst))
 
-      reg_tbl <- dplyr::left_join(reg_tbl, err_tbl, by = 'react_id')
+      err_tbl <- filter(err_tbl, !is.na(error))
+
+      reg_tbl <- left_join(reg_tbl, err_tbl, by = 'react_id')
 
       reg_tbl <-
-        dplyr::mutate(reg_tbl,
-                      z = (fold_reg - 1)/error,
-                      z = ifelse(is.infinite(z), NA, z),
-                      lower_ci = fold_reg + error * qnorm(0.025),
-                      upper_ci = fold_reg + error * qnorm(0.975),
-                      p_value = pnorm(abs(z), lower.tail = FALSE) * 2,
-                      p_adjusted = p.adjust(p_value, 'BH'))
+        mutate(reg_tbl,
+               z = (fold_reg - 1)/error,
+               z = ifelse(is.infinite(z), NA, z),
+               lower_ci = fold_reg + error * qnorm(0.025),
+               upper_ci = fold_reg + error * qnorm(0.975),
+               p_value = pnorm(abs(z), lower.tail = FALSE) * 2,
+               p_adjusted = p.adjust(p_value, 'BH'))
 
       reg_tbl <-
         reg_tbl[c('react_id', 'fold_reg', 'error',
@@ -460,150 +442,108 @@
 
     }
 
-    ## computing the errors: MC -------
+    ## computing the regulation estimates and errors: MC -------
 
-    message('Simulation of gene regulation estimates')
+    message('Regulation estimate and error calculation')
 
-    ### CI computing functions and parallel backend
+    ### CI computing functions
+    ### simulation of the gene regulation values
 
-    perc_fun <- function(x) {
+    sim_est <- draw_norm(nat_x,
+                         err = err,
+                         n = n_iter,
+                         scale = scale,
+                         seed = seed)
 
-      c(error = sd(x, na.rm = TRUE),
-        rlang::set_names(quantile(x,
-                                  c(0.025, 0.975),
-                                  na.rm = TRUE),
-                         c('lower_ci', 'upper_ci')),
-        p_value = test_mc(x))
+    iters <- rownames(sim_est)
 
-    }
+    ## calculation of the estimates and errors
 
-    bca_fun <- function(x) {
+    if(.parallel) plan('multisession')
 
-      c(error = sd(x, na.rm = TRUE),
-        rlang::set_names(coxed::bca(x[!is.na(x)],
-                                    conf.level = 0.95),
-                         c('lower_ci', 'upper_ci')),
-        p_value = test_mc(x))
+    exp_globals <- c('eval_rule',
+                     'fun_ev',
+                     'gene_tbl')
 
-    }
+    exp_packages <- c('generics',
+                      'rlang',
+                      'biggrExtra')
 
-    ci_fun <-
-      switch(ci_method,
-             perc = perc_fun,
-             bca = bca_fun)
+    react_est_lst <-
+      future_map(iters,
+                 ~eval_rule(x = sim_est[.x, ],
+                            rule_exp = gene_tbl$exprs,
+                            parent_env = fun_ev),
+                 .options = furrr_options(seed = TRUE,
+                                          globals = exp_globals,
+                                          packages = exp_packages))
 
-    if(.parallel) {
 
-      future::plan('multisession')
-
-    }
-
-    ## simulation of the gene regulation values
-
-    if(n_iter > 500 & .parallel) {
-
-      gene_est_lst <- draw_norm(x = x,
-                                err = err,
-                                n = n_iter,
-                                seed = seed,
-                                .parallel = TRUE)
-
-    } else {
-
-      gene_est_lst <- draw_norm(x = x,
-                                err = err,
-                                n = n_iter,
-                                seed = seed,
-                                .parallel = FALSE)
-
-    }
-
-    ## calculation of the errors
-
-    message('Error calculation')
-
-    if(.parallel) {
-
-      react_est_lst <-
-        furrr::future_map(gene_est_lst,
-                          biggrExtra:::eval_rule,
-                          rule_exp = gene_tbl$exprs,
-                          parent_env = fun_ev,
-                          .options = furrr::furrr_options(seed = TRUE,
-                                                          globals = c('eval_rule',
-                                                                      'fun_ev',
-                                                                      'gene_tbl'),
-                                                          packages = c('generics',
-                                                                       'rlang',
-                                                                       'biggrExtra')))
-
-    } else {
-
-      react_est_lst <-
-        purrr::map(gene_est_lst,
-                   eval_rule,
-                   rule_exp = gene_tbl$exprs,
-                   parent_env = fun_ev)
-
-    }
-
-    react_est_lst <- purrr::map(react_est_lst,
-                                ~ifelse(.x < 0, 0, .x))
+    react_est_lst <- map(react_est_lst, ~ifelse(.x < 0, 0, .x))
 
     react_est_mtx <- do.call('rbind', react_est_lst)
 
-    if(n_iter > 1000 & .parallel) {
+    if(burn_in > 0) {
 
-      err_tbl <-
-        furrr::future_map(colnames(react_est_mtx),
-                          ~ci_fun(react_est_mtx[, .x]),
-                          .options = furrr::furrr_options(seed = TRUE,
-                                                          packages = c('biggrExtra',
-                                                                       'rlang',
-                                                                       'generics'),
-                                                          globals = c('react_est_mtx',
-                                                                      'ci_fun',
-                                                                      'test_mc')))
-
-    } else {
-
-      err_tbl <- purrr::map(colnames(react_est_mtx),
-                            ~ci_fun(react_est_mtx[, .x]))
+      react_est_mtx <-
+        react_est_mtx[(burn_in + 1):nrow(react_est_mtx), ]
 
     }
 
-    err_tbl <- do.call('rbind', err_tbl)
+    ci_fun = switch(ci_method,
+                    perc = perci,
+                    bca = bca)
 
-    rownames(err_tbl) <- colnames(react_est_mtx)
+    ## calculation of MC estimates, SD and confidence intervals
 
-    err_tbl <-
-      tibble::rownames_to_column(as.data.frame(err_tbl), 'react_id')
+    mc_est <- estMC(react_est_mtx,
+                    ci_fun = ci_fun,
+                    conf_level = 0.95)
 
-    reg_tbl <- left_join(reg_tbl, err_tbl, by = 'react_id')
+    ## significance testing: H0 - fold regulation is mu = 0
 
-    reg_tbl <- dplyr::mutate(reg_tbl,
-                             p_adjusted = p.adjust(p_value, 'BH'))
+    mc_p_vals <- simPval(react_est_mtx,
+                         mu = 1,
+                         median_estimate = mc_estimate == 'median')
 
-    reg_tbl <-
-      reg_tbl[c('react_id', 'fold_reg', 'error',
-                'lower_ci', 'upper_ci',
-                'p_value', 'p_adjusted')]
+    rownames(mc_est) <- colnames(react_est_mtx)
+    names(mc_p_vals) <- names(react_est_mtx)
+
+    if(mc_estimate == 'median') {
+
+      mc_est <- mc_est[, c(1, 3:5)]
+
+    } else {
+
+      mc_est <- mc_est[, -1]
+
+    }
+
+    colnames(mc_est) <- c('fold_reg', 'error', 'lower_ci', 'upper_ci')
+
+    mc_est <- rownames_to_column(as.data.frame(mc_est), 'react_id')
+
+    mc_est[['p_value']] <- mc_p_vals
+
+    mc_est[['p_adjusted']] <- p.adjust(mc_p_vals, 'BH')
+
+    mc_est <- as_tibble(mc_est)
 
     if(!return_genes & !return_mc) {
 
-      return(reg_tbl)
+      return(mc_est)
 
     } else {
 
       if(!return_mc) {
 
         return(list(gene_map = gene_tbl,
-                    reg = reg_tbl))
+                    reg = mc_est))
 
       } else {
 
         return(list(gene_map = gene_tbl,
-                    reg = reg_tbl,
+                    reg = mc_est,
                     mc = react_est_mtx))
 
       }

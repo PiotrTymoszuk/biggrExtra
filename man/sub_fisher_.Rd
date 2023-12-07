@@ -2,9 +2,12 @@
 % Please edit documentation in R/enrichment_utils.R
 \name{sub_fisher_}
 \alias{sub_fisher_}
+\alias{sub_fisher}
 \title{Test for enrichment in a subsystem with Fisher's exact test.}
 \usage{
 sub_fisher_(data, alternative = "greater", ...)
+
+sub_fisher(data, alternative = "greater", ...)
 }
 \arguments{
 \item{data}{a data frame with the following variables:
@@ -18,13 +21,15 @@ and must be one of "two.sided", "greater" or "less". Defaults to "greater".}
 }
 \value{
 a data frame with subsystem name and testing results
-for regulated, activated and inhibited reactions.
+for regulated, activated and inhibited reactions
+as well as, for, \code{sub_fisher()} FDR-adjusted p values.
 }
 \description{
 Tests for significant enrichment of generally significantly
 regulated, significantly activated and significantly inhibited reactions in
 a metabolic subsystem.
-The significance is determined by Fisher's exact test.
+The significance is determined by Fisher's exact test (H0: no significantly
+regulated reactions)
 }
 \details{
 The method is biased towards subsystems with multiple reactions!

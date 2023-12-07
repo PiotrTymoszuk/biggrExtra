@@ -10,7 +10,8 @@
   inequalities,
   constraints,
   externals,
-  file.name = "model.lim"
+  file.name = "model.lim",
+  ...
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ see: \code{\link[BiGGR]{createLIMFromSBML}}.}
 balance analysis (FBA) has to be performed.}
 
 \item{file.name}{a path and name of the LIM file.}
+
+\item{...}{extra arguments, currently none.}
 }
 \value{
 A model file with with extension ".lim" is created.

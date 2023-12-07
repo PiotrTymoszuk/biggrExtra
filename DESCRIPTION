@@ -8,6 +8,7 @@ Description: Enables for construction of BiGGR objects containing metabolome
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+LazyDataCompression: bzip2
 Authors@R: c(
     person("Piotr", "Tymoszuk", , "piotr.s.tymoszuk@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-0398-6034")),
@@ -15,21 +16,29 @@ Authors@R: c(
     person("Hannes", "Hettling", , "hannes.hettling@naturalis.nl", role = "ctb")
   )
 Imports: 
-    coxed,
-    dplyr,
+    BiGGR,
     furrr,
     future,
     ggplot2,
+    graph,
+    hyperdraw,
+    hypergraph,
+    methods, 
     microViz,
-    plyr,
     purrr,
-    rstatix, 
-    stringi,
+    Rcpp,
+    Rgraphviz,
+    rlang,
+    rstatix,
+    stats, 
+    stringi, 
     tibble,
     tidyr
 Depends: 
-    BiGGR,
+    R (>= 3.5.0), 
     generics, 
     dplyr
-RoxygenNote: 7.2.1
+LinkingTo: 
+    Rcpp
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)

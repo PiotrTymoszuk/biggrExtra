@@ -2,20 +2,29 @@
 % Please edit documentation in R/annotation_funs.R
 \name{react_to_gene}
 \alias{react_to_gene}
-\title{Map reactions to gene EntrezID.}
+\alias{gene_to_react}
+\title{Map reactions and gene EntrezID.}
 \usage{
 react_to_gene(react_id, geneSBML)
+
+gene_to_react(entrez_id, geneSBML, lead_str = TRUE)
 }
 \arguments{
-\item{react_id}{BiGG reaction ID, with or without the leading 'R_' string.}
+\item{react_id}{a vector of BiGG reaction IDs, with or without the leading
+'R_' string.}
 
 \item{geneSBML}{a geneSBML object.}
+
+\item{entrez_id}{a vector  of gene Entrez IDs.}
+
+\item{lead_str}{logical, should the reaction ID contain the leading 'R_'
+string? Defaults to TRUE.}
 }
 \value{
-a data frame with reaction ids and a list of the associated
+a data frame with reaction BiGG IDs and a list of the associated
 gene Entrez IDs.
 }
 \description{
-Maps reaction BiGG IDs to the Entrez IDs of the associated
-genes.
+Maps reaction BiGG IDs to the Entrez IDs of the associated genes
+(\code{react_to_gene()}) or the other way round (\code{gene_to_react()}).
 }

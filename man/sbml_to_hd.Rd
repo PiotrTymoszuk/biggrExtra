@@ -69,7 +69,7 @@ Defaults to c(150,150,150,150).}
 }
 \value{
 a hypergraph object of the 'RagraphBPH' class. Plotted
-conveniently with the plot() method.
+conveniently with the \code{plot()} method.
 }
 \description{
 Produces a hypergraph (an instance of 'RagraphBPH' class).

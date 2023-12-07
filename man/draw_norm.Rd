@@ -4,24 +4,24 @@
 \alias{draw_norm}
 \title{Draw values from the gene regulation estimate distribution.}
 \usage{
-draw_norm(x, err, n, seed = NULL, .parallel = FALSE)
+draw_norm(x, err, n, scale = c("identity", "log2", "log"), seed = NULL)
 }
 \arguments{
-\item{x}{a numeric vector with fold-regulation estimates (not log2!!!).
+\item{x}{a numeric vector with fold-regulation estimates.
 Elements are named with Entrez IDs.}
 
-\item{err}{a numeric vector with an error estimate such as SD or SEM
-(not log2!!!), named with Entrez IDs.}
+\item{err}{a numeric vector with an error estimate such as SD or SEM,
+named with Entrez IDs.}
 
 \item{n}{number of values to be drawn.}
 
+\item{scale}{name of the scale of the provided regulation estimates and
+their errors: 'identity' (default), 'log2' or 'log'.}
+
 \item{seed}{seed of the random number generator.}
-
-\item{.parallel}{logical, should the function work in parallel? Works only if
-TRUE and a parallel backend compatible with furrr::future_map() is provided.}
-
-\item{return}{a list with n numeric values corresponding to the estimates,
-named with the Entrez IDs.}
+}
+\value{
+a numeric matrix: genes are columns, theri regulation estimates are
 }
 \description{
 Draws values from the gene regulation estimate
