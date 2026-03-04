@@ -38,8 +38,8 @@ NumericVector Quantile(NumericVector x, NumericVector probs) {
 
   const size_t n = x.size(), np = probs.size();
 
-  if (n==0) return x;
-  if (np==0) return probs;
+  if (n == 0) return x;
+  if (np == 0) return probs;
 
   NumericVector index = (n - 1.) * probs, y = x.sort(), x_hi(np), qs(np);
   NumericVector lo = floor(index), hi = ceiling(index);

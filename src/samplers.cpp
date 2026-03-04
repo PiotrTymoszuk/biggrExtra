@@ -1,5 +1,4 @@
-/*** Cpp functions that sample Random multinomial distibutions
-*/
+/*** Cpp functions that sample Random multinomial distibutions*/
 
 #include <Rcpp.h>
 #include "samplers.h"
@@ -11,7 +10,9 @@ using namespace Rcpp;
 IntegerVector concatenate(IntegerVector x, IntegerVector y) {
 
   int n_cmm = x.size() + y.size();
+
   IntegerVector z(n_cmm);
+
   CharacterVector names_x = x.names();
   CharacterVector names_y = y.names();
   CharacterVector names_cmm(n_cmm);
@@ -29,6 +30,7 @@ IntegerVector concatenate(IntegerVector x, IntegerVector y) {
   z.attr("names") = names_cmm;
 
   return z;
+
 }
 
 // [[Rcpp::export]]

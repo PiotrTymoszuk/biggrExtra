@@ -8,8 +8,7 @@
 SBML model
 }
 \source{
-BiGGR package, BiGGR database
-(http://bigg.ucsd.edu/models/RECON1/reactions/ATPS4m).
+BiGGR package, BiGGR database (http://bigg.ucsd.edu/models).
 }
 \usage{
 data(Recon2D)

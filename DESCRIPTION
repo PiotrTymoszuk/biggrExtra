@@ -1,7 +1,7 @@
 Package: biggrExtra
 Type: Package
 Title: Extension of the BiGGR Package for Gne Regulation Data 
-Version: 0.1.0
+Version: 1.0.0
 Maintainer: Piotr Tymoszuk <piotr.s.tymoszuk@gmail.com>
 Description: Enables for construction of BiGGR objects containing metabolome 
     data based on gene expression regulation estimates.
@@ -16,20 +16,14 @@ Authors@R: c(
     person("Hannes", "Hettling", , "hannes.hettling@naturalis.nl", role = "ctb")
   )
 Imports: 
-    BiGGR,
     furrr,
     future,
     ggplot2,
-    graph,
-    hyperdraw,
-    hypergraph,
     methods, 
     microViz,
     purrr,
     Rcpp,
-    Rgraphviz,
     rlang,
-    rstatix,
     stats, 
     stringi, 
     tibble,
@@ -40,5 +34,5 @@ Depends:
     dplyr
 LinkingTo: 
     Rcpp
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)

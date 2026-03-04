@@ -95,8 +95,7 @@
 #'
 #' @format SBML model
 #'
-#' @source BiGGR package, BiGGR database
-#' (http://bigg.ucsd.edu/models/RECON1/reactions/ATPS4m).
+#' @source BiGGR package, BiGGR database (http://bigg.ucsd.edu/models).
 #'
 #' @docType data
 #'
@@ -116,8 +115,7 @@
 #'
 #' @format SBML model
 #'
-#' @source BiGGR package, BiGGR database
-#' (http://bigg.ucsd.edu/models/RECON1/reactions/ATPS4m).
+#' @source BiGGR package, BiGGR database (http://bigg.ucsd.edu/models).
 #'
 #' @docType data
 #'

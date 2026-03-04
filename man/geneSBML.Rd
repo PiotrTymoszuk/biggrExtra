@@ -2,28 +2,40 @@
 % Please edit documentation in R/classes.R
 \name{geneSBML}
 \alias{geneSBML}
-\title{Create a geneSBML object.}
+\alias{is_geneSBML}
+\alias{is_memoSaver}
+\title{Create a \code{geneSBML} object.}
 \usage{
 geneSBML(model, reg, gene_map, mc = NULL)
+
+is_geneSBML(x)
+
+is_memoSaver(x)
 }
 \arguments{
-\item{model}{a SBML model.}
+\item{model}{\code{NULL} or a \code{SBML} model.}
 
-\item{reg}{a data frame with reaction IDs ('react_id'), regulation estimates
-('fold_reg') and, optionally, regulation errors ('error').}
+\item{reg}{a data frame with reaction IDs (\code{react_id}), regulation estimates
+(\code{fold_reg}) and, optionally, regulation errors (\code{error}).}
 
-\item{gene_map}{a data frame with reaction IDs ('react_id'),
-list of Entrez ID identifiers ('entrez_id')
-and evaluation expressions ('exprs').}
+\item{gene_map}{a data frame with reaction IDs (\code{react_id}),
+list of Entrez ID identifiers (\code{react_id})
+and evaluation expressions (\code{react_id}).}
 
 \item{mc}{optional, a matrix with reaction regulation estimates in each step
 of Monte Carlo simulation. Columns are reactions, rows are subsequent runs.}
+
+\item{x}{an object.}
 }
 \value{
-an instance of geneSBML class.
+an instance of \code{geneSBML} class.
 }
 \description{
-Creates a geneSBML object given a SBML model object and a
+Creates a \code{geneSBML} object given a SBML model object and a
 data frame with reaction regulation estimates and, optionally, regulation
 errors, and a data frame with gene - reaction mapping.
+}
+\details{
+In \code{model = NULL} and \code{mc = NULL}, a mamory saver object is returned
+(subclass \code{memoSaver}).#'
 }
