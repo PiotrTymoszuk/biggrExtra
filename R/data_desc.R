@@ -83,46 +83,69 @@
 
   NULL
 
-# Corrected Recon2 and Recon3 models -------
+# Reaction annotation data -------
 
-#' Corrected Recon2 SBML model.
+#' Reaction association rules for the Recon2 model.
 #'
 #' @description
-#' Version of the SBML Recon2 model provided
-#' by the BiGGR package with manual correction of errors in the gene
-#' association rules (detected for the reaction R_ATPS4m, slot: notes,
-#' missing parentheses, replacement with the rule from Recon1 model).
+#' Cleared and harmonized reaction annotation data for
+#' [Recon2 model of human metabolism](https://www.ebi.ac.uk/biomodels/services/download/get-files/MODEL1109130000/2/MODEL1109130000_url.xml).
+#' The data were processed with the [RECON_processing](https://github.com/PiotrTymoszuk/RECON_processing)
+#' R pipeline.
 #'
-#' @format SBML model
+#' @format
+#' a data frame with 7440 rows and 10 columns:
+#' * __id__ and __metaid__ reaction identifiers
+#' * __sboTerm__ Systems Biology Ontology term
+#' * __name__ reaction name
+#' * __gene_association__ gene - reaction association rules as character strings
+#' * __subsystem__ Recon metabolic subsystem
+#' * __ec_number__ enzyme's EC identifier
+#' * __confidence_level__ confidence level for the gene - reaction association rule
+#' * __reference__ literature references
+#' * __notes__ additional comments
 #'
-#' @source BiGGR package, BiGGR database (http://bigg.ucsd.edu/models).
+#' @source
+#' [biomodels](https://www.ebi.ac.uk/biomodels/services/download/get-files/MODEL1109130000/2/MODEL1109130000_url.xml) and
+#' [RECON_processing GitHub respository](https://github.com/PiotrTymoszuk/RECON_processing) .
 #'
 #' @docType data
 #'
 #' @name Recon2D
 #'
+#' @md
 #' @usage data(Recon2D)
 
   NULL
 
-#' Corrected Recon3 SBML model.
+#' Reaction association rules for the Recon2.2 model.
 #'
 #' @description
-#' A version of the SBML Recon3 model provided
-#' by the BiGGR package with manual correction of errors in the gene
-#' association rules (detected for the reaction R_ATPS4m, slot: notes,
-#' missing parentheses, replacement with the rule from Recon1 model).
+#' Cleared and harmonized reaction annotation data for
+#' [Recon2.2 model of human metabolism](https://www.biomodels.org/biomodels/services/download/get-files/MODEL1603150001/2/MODEL1603150001_url.xml).
+#' The data were processed with the [RECON_processing](https://github.com/PiotrTymoszuk/RECON_processing)
+#' R pipeline.
 #'
-#' @format SBML model
+#' @format
+#' a data frame with 7785 rows and 7 columns:
+#' * __id__ and __metaid__ reaction identifiers
+#' * __sboTerm__ Systems Biology Ontology term
+#' * __name__ reaction name
+#' * __gene_association__ gene - reaction association rules as character strings
+#' * __subsystem__ Recon metabolic subsystem
+#' * __confidence_level__ confidence level for the gene - reaction association rule#'
 #'
-#' @source BiGGR package, BiGGR database (http://bigg.ucsd.edu/models).
+#' @source
+#' [biomodels](https://www.ebi.ac.uk/biomodels/services/download/get-files/MODEL1109130000/2/MODEL1109130000_url.xml) and
+#' [RECON_processing GitHub respository](https://github.com/PiotrTymoszuk/RECON_processing) .
 #'
 #' @docType data
 #'
-#' @name Recon3D
+#' @name Recon2D
 #'
-#' @usage data(Recon3D)
+#' @md
+#' @usage data(Recon2D)
 
-  NULL
+NULL
 
 # END ------

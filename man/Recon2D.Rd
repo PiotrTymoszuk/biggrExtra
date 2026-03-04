@@ -3,19 +3,51 @@
 \docType{data}
 \name{Recon2D}
 \alias{Recon2D}
-\title{Corrected Recon2 SBML model.}
+\title{Reaction association rules for the Recon2 model.}
 \format{
-SBML model
+a data frame with 7440 rows and 10 columns:
+\itemize{
+\item \strong{id} and \strong{metaid} reaction identifiers
+\item \strong{sboTerm} Systems Biology Ontology term
+\item \strong{name} reaction name
+\item \strong{gene_association} gene - reaction association rules as character strings
+\item \strong{subsystem} Recon metabolic subsystem
+\item \strong{ec_number} enzyme's EC identifier
+\item \strong{confidence_level} confidence level for the gene - reaction association rule
+\item \strong{reference} literature references
+\item \strong{notes} additional comments
+}
+
+a data frame with 7785 rows and 7 columns:
+\itemize{
+\item \strong{id} and \strong{metaid} reaction identifiers
+\item \strong{sboTerm} Systems Biology Ontology term
+\item \strong{name} reaction name
+\item \strong{gene_association} gene - reaction association rules as character strings
+\item \strong{subsystem} Recon metabolic subsystem
+\item \strong{confidence_level} confidence level for the gene - reaction association rule#'
+}
 }
 \source{
-BiGGR package, BiGGR database (http://bigg.ucsd.edu/models).
+\href{https://www.ebi.ac.uk/biomodels/services/download/get-files/MODEL1109130000/2/MODEL1109130000_url.xml}{biomodels} and
+\href{https://github.com/PiotrTymoszuk/RECON_processing}{RECON_processing GitHub respository} .
+
+\href{https://www.ebi.ac.uk/biomodels/services/download/get-files/MODEL1109130000/2/MODEL1109130000_url.xml}{biomodels} and
+\href{https://github.com/PiotrTymoszuk/RECON_processing}{RECON_processing GitHub respository} .
 }
 \usage{
 data(Recon2D)
+
+data(Recon2D)
 }
 \description{
-Version of the SBML Recon2 model provided
-by the BiGGR package with manual correction of errors in the gene
-association rules (detected for the reaction R_ATPS4m, slot: notes,
-missing parentheses, replacement with the rule from Recon1 model).
+Cleared and harmonized reaction annotation data for
+\href{https://www.ebi.ac.uk/biomodels/services/download/get-files/MODEL1109130000/2/MODEL1109130000_url.xml}{Recon2 model of human metabolism}.
+The data were processed with the \href{https://github.com/PiotrTymoszuk/RECON_processing}{RECON_processing}
+R pipeline.
+
+Cleared and harmonized reaction annotation data for
+\href{https://www.biomodels.org/biomodels/services/download/get-files/MODEL1603150001/2/MODEL1603150001_url.xml}{Recon2.2 model of human metabolism}.
+The data were processed with the \href{https://github.com/PiotrTymoszuk/RECON_processing}{RECON_processing}
+R pipeline.
 }

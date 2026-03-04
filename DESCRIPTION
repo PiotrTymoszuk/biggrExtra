@@ -5,7 +5,7 @@ Version: 1.0.0
 Maintainer: Piotr Tymoszuk <piotr.s.tymoszuk@gmail.com>
 Description: Enables for construction of BiGGR objects containing metabolome 
     data based on gene expression regulation estimates.
-License: GPL-3
+License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: bzip2
