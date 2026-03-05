@@ -20,4 +20,22 @@
   extract_genes(Recon2D)
   extract_genes(Recon2_2D)
 
+# Testing of the distribution drawing function -------
+
+  tst_x <- set_names(tcga_data$estimate,
+                     tcga_data$entrez_id)
+
+  tst_err <- set_names(tcga_data$se,
+                       tcga_data$entrez_id)
+
+  draw_matrix <- biggrExtra:::draw_norm(x = tst_x,
+                                        err = tst_err,
+                                        scale = "log2",
+                                        n = 100)
+
+  draw_matrix[1:10, 1:10]
+  dim(draw_matrix)
+
+
+
 

@@ -47,6 +47,8 @@
 #' @importFrom rlang `.data`
 #' @importFrom rlang `.env`
 #' @importFrom rlang `!!`
+#' @importFrom rlang is_environment
+#' @importFrom rlang new_environment
 #'
 #' @importFrom stringi stri_detect
 #' @importFrom stringi stri_replace
