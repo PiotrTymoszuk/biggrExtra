@@ -32,48 +32,6 @@
 
   }
 
-# Evaluation of the gene mapping rules ----
-
-#' Evaluate gene mapping rules.
-#'
-#' @description
-#' Evaluates a list of gene mapping rules stored as expression.
-#' Such rules are retrieved from data frames of reaction annotations
-#' with \code{\link{extract_genes}} or \code{\link{as_reactDB}}.
-#'
-#' @return a numeric vector with the reaction regulation estimates.
-#' Named with reaction IDs.
-#'
-#' @param x a vector with gene regulation estimates named
-#' with Entrez ID identifiers.
-#' @param database an object of class \code{\link{reactDB}} created with
-#' functions \code{\link{extract_genes}} or \code{\link{as_reactDB}}.
-#' @param parent_env an environments containing evaluation functions and values
-#' for genes missing from the x gene regulation estimate vector.
-
-  eval_rules <- function(x, database, parent_env) {
-
-    ## entry controls ------
-
-    stopifnot(is.numeric(x))
-    stopifnot(!is.null(names(x)))
-
-    stopifnot(is_reactDB(database))
-
-    stopifnot(is_environment(parent_env))
-
-    ## serial evaluation --------
-
-    exprs_lst <- set_names(database[["exprs"]],
-                           database[["id"]])
-
-    eval_env <-
-      new_environment(data = as.list(x), parent = parent_env)
-
-    map_dbl(exprs_lst, eval, envir = eval_env)
-
-  }
-
 # Simulation of gene regulation estimate distribution -------
 
 #' Draw values from the gene regulation estimate distribution.

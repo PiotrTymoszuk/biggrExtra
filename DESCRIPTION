@@ -11,10 +11,8 @@ LazyData: true
 LazyDataCompression: bzip2
 Authors@R: c(
     person("Piotr", "Tymoszuk", , "piotr.s.tymoszuk@gmail.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-0398-6034")),
-    person("Anand K.", "Gavai", , "anand.gavai@bioinformatics.nl", role = "ctb"),
-    person("Hannes", "Hettling", , "hannes.hettling@naturalis.nl", role = "ctb")
-  )
+           comment = c(ORCID = "0000-0002-0398-6034"))
+           )
 Imports: 
     furrr,
     future,
