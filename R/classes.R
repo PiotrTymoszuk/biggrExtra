@@ -1,6 +1,6 @@
 # S3 class definitions
 
-# geneSBML class ------
+# `geneSBML` class ------
 
 #' Create a `geneSBML` object.
 #'
@@ -105,5 +105,94 @@
 #' @export
 
   is_memoSaver <- function(x) inherits(x, "geneSBML") & inherits(x, "memoSaver")
+
+# `reactDB` class --------
+
+#' Database of reaction annotation: `reactDB` class.
+#'
+#' @description
+#' Constructs an instance of a reaction annotation database data frame with
+#' processed gene - reaction association rules and gene - reaction rule evaluation
+#' expressions.
+#'
+#' @details
+#' The function conducts basic validation for conformity with reaction
+#' evaluation tools.
+#' The input and output data frames have the following columns:
+#' * __id__: reaction identifier beginning with `"R_"` string.
+#' * __name__: character strings with reaction names.
+#' * __subsystem__: character strings with names of Recon subsystems.
+#' * __gene_association__: character strings with gene - reaction association rules.
+#' * __entrez_id__: a column with lists of Entrez IDs of genes associated with
+#' the reactions.
+#' * __exprs__: a column with `NULL`, R symbols or R language expressions used
+#' to evaluate the gene - reaction association rules.
+#'
+#' @return a data frame of class `reactDB`.
+#'
+#' @param x a data frame with columns specified in Details.
+#'
+#' @md
+#' @export
+
+  reactDB <- function(x) {
+
+    ## input controls --------
+
+    if(is_reactDB(x)) return(x)
+
+    if(!is.data.frame(x)) stop("`x` has to be a data frame.", call. = FALSE)
+
+    fix_cols <-
+      c("id", "name", "subsystem", "gene_association", "entrez_id", "exprs" )
+
+    missing_cols <- setdiff(fix_cols, names(x))
+
+    if(length(missing_cols) > 0) {
+
+      stop(paste("The following obligatory columns are missing from `x`:",
+                 paste(missing_cols, collapse = ", ")),
+           call. = FALSE)
+
+    }
+
+    char_cols <- c("id", "name", "subsystem", "gene_association")
+
+    class_check <- map_lgl(x[char_cols], is.character)
+
+    if(any(!class_check)) {
+
+      stop(paste("The following obligatory column in `x` must be of character type:",
+                 paste(char_cols[!class_check]), collapse = ", "),
+           call. = FALSE)
+
+    }
+
+    if(!is.list(x[["entrez_id"]])) stop("Column `entrez_id` must be a list of Entrez IDs.", call. = FALSE)
+
+    if(!is.list(x[["exprs"]])) stop("Column `exprs` must be a list.", call. = FALSE)
+
+    class_check <-
+      map_lgl(x[["exprs"]], function(x) is.call(x) | is.name(x) | is.null(x))
+
+    if(any(!class_check)) {
+
+      stop(paste("Unrecognized objects in `exprs` columns.",
+                 "The allowed formats are NULL, R calls, or names."),
+           call. = FALSE)
+
+    }
+
+    ## the structure -------
+
+    structure(x, class = c("reactDB", class(x)))
+
+  }
+
+#' @rdname reactDB
+#' @export
+
+  is_reactDB <- function(x) inherits(x, "reactDB")
+
 
 # END ------

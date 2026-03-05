@@ -33,58 +33,6 @@
 
 # Reaction annotation data -------
 
-#' BiGG reaction annotation data.
-#'
-#' @description
-#' A data frame with BiGG database annotation of metabolic
-#' reactions.
-#'
-#' @format
-#' A data frame with 28301 rows and 6 variables:
-#' * __bigg_id__: BiGG reaction identifier
-#' * __name__: reaction name
-#' * __reaction_string__: reaction equation
-#' * __model_list__: list of BiGG models containing the reaction
-#' * __database_links__: links to the BiGG on-line database
-#' * __old_bigg_ids__: legacy BiGG ID
-#'
-#' @source BiGG: http://bigg.ucsd.edu/data_access
-#'
-#' @docType data
-#'
-#' @name reactions
-#'
-#' @usage data(reactions)
-
-  NULL
-
-# Metabolite annotation data ------
-
-#' BiGG metabolite annotation data.
-#'
-#' @description
-#' A data frame with BiGG database annotation of metabolites.
-#'
-#' @format A data frame with 15724 rows and 6 variables:
-#' * __bigg_id__: BiGG metabolite identifier
-#' * __universal_bigg_id__: universal BiGG metabolite identifier
-#' * __name__: metabolite name
-#' * __model_list__: list of models with containing the metabolite
-#' * __database_links__: links to the BiGG on-line database
-#' * __old_bigg_ids__: legacy BiGG ID
-#'
-#' @source BiGG: http://bigg.ucsd.edu/data_access
-#'
-#' @docType data
-#'
-#' @name metabolites
-#'
-#' @usage data(metabolites)
-
-  NULL
-
-# Reaction annotation data -------
-
 #' Reaction association rules for the Recon2 model.
 #'
 #' @description
@@ -141,10 +89,10 @@
 #'
 #' @docType data
 #'
-#' @name Recon2D
+#' @name Recon2_2D
 #'
 #' @md
-#' @usage data(Recon2D)
+#' @usage data(Recon2_2D)
 
 NULL
 

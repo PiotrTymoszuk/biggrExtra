@@ -77,6 +77,7 @@
 #' @importFrom stats p.adjust
 #' @importFrom stats qnorm
 #' @importFrom stats pnorm
+#' @importFrom stats na.omit
 #'
 #' @useDynLib biggrExtra
 
