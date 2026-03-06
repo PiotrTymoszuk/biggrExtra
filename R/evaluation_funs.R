@@ -109,8 +109,10 @@
 #' BCA ("bca", default) or percentile ("perc").
 #' @param seed a seed for the random number generator.
 #' @param .parallel logical, should th computation be run in parallel?
+#' @param ... additional argument, currently none.
 #'
 #' @md
+#' @export
 
   get_regulation <- function(x,
                              err = NULL,
@@ -126,7 +128,7 @@
                              burn_in = 0,
                              ci_method = c("bca", "perc"),
                              seed = NULL,
-                             .parallel = TRUE) {
+                             .parallel = TRUE, ...) {
 
     ## benchmarking and exit handlers --------
 
@@ -218,6 +220,14 @@
 
     stopifnot(is.logical(return_mc))
     return_mc <- return_mc[1]
+
+    if(!is.na(x_default)) {
+
+      if(!is.numeric(x_default)) stop("`x_default` has to be a number or NA.", call. = FALSE)
+
+      x_default <- x_default[1]
+
+    }
 
     ## building a parent evaluation environment -------
 
@@ -421,5 +431,258 @@
   }
 
 # Reaction activity scores with bare expression data --------
+
+#' Calculate reaction activity scores based on gene expression data.
+#'
+#' @description
+#' Function `get_activity()` calculates activity scores of metabolic reactions
+#' by evaluation of gene - reaction association rules in a reaction annotation
+#' database given gene expression data.
+#'
+#' @details
+#' Function `get_activity()` takes a numeric matrix or a numeric data frame `x`
+#' with gene expression metrics to calculate activity scores of metabolic reactions.
+#' The scores are calculated by simple evaluation of gene - reaction association
+#' rules stored in a reaction annotation database data frame of class
+#' \code{\link{reactDB}} (created with \code{\link{as_reactDB}} or
+#' \code{\link{extract_genes}}).
+#'
+#' Of note, the gene expression metrics in `x` are not pre-processed prior to
+#' calculation of the reaction activity scores; the pre-processing steps are
+#' intended to be done by the user.
+#' Because evaluation of the gene - reaction association rules uses simple
+#' arithmetic with means, medians, minima or maxima of gene expression values,
+#' it's highly recommended to bring the expression values in `x` approximate
+#' equal scales, e.g. by computing Z-scores with \code{\link[microViz]{zScores}}.
+#'
+#' @return a numeric matrix or a data frame (if `as_data_frame = TRUE`) with
+#' reaction activity scores.
+#' Metabolic reactions named with their identifiers are in columns,
+#' samples are in rows.
+#' In the data frame output, sample identifiers are stored in the first column
+#' named `sample_id`.
+#'
+#' @inheritParams get_regulation
+#' @param x a numeric matrix or a data frame with gene expression metrics; genes
+#' in columns, samples in rows.
+#' @param as_data_frame logical, should the matrix of reaction activity scores
+#' be coerced to a data frame?
+#' @param id_col `NULL` or a character string specifying a variable serving as
+#' a sample identifier. If `id_col = NULL`, the sample identifiers will be
+#' extracted from row names of `x`.
+#' @param variables `NULL` or a character vector specifying gene expression
+#' variables used for calculation of reaction activity scores. If `NULL`, all
+#' variables in `x` except of the sample identifier will be used.
+#' @param ... additional arguments, currently none.
+#'
+#' @export
+
+  get_activity <- function(x, ...) UseMethod("get_activity")
+
+#' @rdname get_activity
+#' @export
+
+  get_activity.matrix <- function(x,
+                                  database,
+                                  or_fun = c("mean", "median", "min", "max"),
+                                  and_fun = c("min", "max", "mean", "median"),
+                                  x_default = 1,
+                                  as_data_frame = TRUE,
+                                  .parallel = FALSE, ...) {
+
+    ## benchmarking and exit handlers --------
+
+    start_time <- Sys.time()
+
+    on.exit(plan("sequential"))
+    on.exit(message(paste("Elapsed:", Sys.time() - start_time)), add = TRUE)
+
+    ## entry control --------
+
+    stopifnot(is.matrix(x))
+
+    if(!is.numeric(x)) stop("`x` must be a numeric matrix.", call. = FALSE)
+
+    if(is.null(colnames(x))) stop("Column names of `x` must be specified.", call. = FALSE)
+    if(is.null(rownames(x))) stop("Row names of `x` must be specified.", call. = FALSE)
+
+    if(!is_reactDB(database)) {
+
+      stop(paste("`database` has to be a `reactDB` object.",
+                 "Please consult functions `as_reactDB()` and `extract_genes()`."),
+           call. = FALSE)
+
+    }
+
+    or_fun <- match.arg(or_fun[1], c("mean", "median", "min", "max"))
+    and_fun <- match.arg(and_fun[1], c("min", "max", "mean", "median"))
+
+    if(!is.na(x_default)) {
+
+      if(!is.numeric(x_default)) stop("`x_default` has to be a number or NA.", call. = FALSE)
+
+      x_default <- x_default[1]
+
+    }
+
+    stopifnot(is.logical(as_data_frame))
+    as_data_frame <- as_data_frame[1]
+
+    ## evaluation environment ---------
+
+    o_fun <- switch(or_fun,
+                    min = function(x, y) min(c(x, y), na.rm = TRUE),
+                    max = function(x, y) max(c(x, y), na.rm = TRUE),
+                    mean = function(x, y) mean(c(x, y), na.rm = TRUE),
+                    median = function(x, y) median(c(x, y), na.rm = TRUE))
+
+    a_fun <- switch(and_fun,
+                    min = function(x, y) min(c(x, y), na.rm = TRUE),
+                    max = function(x, y) max(c(x, y), na.rm = TRUE),
+                    mean = function(x, y) mean(c(x, y), na.rm = TRUE),
+                    median = function(x, y) median(c(x, y), na.rm = TRUE))
+
+    all_genes <- reduce(database$entrez_id, union)
+
+    miss_genes <- all_genes[!all_genes %in% colnames(x)]
+
+    miss_gene_lst <- set_names(rep(x_default, length(miss_genes)),
+                               miss_genes)
+    fun_ev <-
+      new_environment(data = c(list(`%AND%` = a_fun,
+                                    `%OR%` = o_fun,
+                                    `(` = `(`),
+                               as.list(miss_gene_lst)))
+
+    ## calculation of the reaction activity scores ---------
+
+    row_data <- map(1:nrow(x), function(idx) x[idx, ])
+
+    row_data <- set_names(row_data,
+                          rownames(x))
+
+    if(.parallel) plan("multisession")
+
+    exp_globals <- c("eval_rules",
+                     "fun_ev",
+                     "database")
+
+    exp_packages <- c("generics",
+                      "rlang",
+                      "biggrExtra")
+
+    activity_mtx <-
+      future_map(row_data,
+                 eval_rules,
+                 database = database,
+                 parent_env = fun_ev,
+                 .options = furrr_options(seed = TRUE,
+                                          globals = exp_globals,
+                                          packages = exp_packages))
+
+    activity_mtx <- reduce(activity_mtx, rbind)
+
+    rownames(activity_mtx) <- names(row_data)
+
+    if(!as_data_frame) return(activity_mtx)
+
+    return(as_tibble(rownames_to_column(as.data.frame(activity_mtx), "sample_id")))
+
+  }
+
+#' @rdname get_activity
+#' @export
+
+  get_activity.data.frame <- function(x,
+                                      database,
+                                      id_col = NULL,
+                                      variables = NULL,
+                                      or_fun = c("mean", "median", "min", "max"),
+                                      and_fun = c("min", "max", "mean", "median"),
+                                      x_default = 1,
+                                      as_data_frame = TRUE,
+                                      .parallel = FALSE, ...) {
+
+    ## minimal input control --------
+
+    stopifnot(is.data.frame(x))
+
+    if(!is.null(id_col)) {
+
+      stopifnot(is.character(id_col))
+      id_col <- id_col[1]
+
+      if(!id_col %in% names(x)) {
+
+        stop("Variable specified by `id_col` is missing from `x`",
+             call. = FALSE)
+
+      }
+
+      x <- column_to_rownames(x, id_col)
+
+    }
+
+    if(is.null(variables)) variables <- names(x)
+
+    if(!is.character(variables)) {
+
+      stop("`variables` has to be NULL or a character vector.", call. = FALSE)
+
+    }
+
+    missing_cols <- setdiff(variables, names(x))
+
+    if(length(missing_cols) > 0) {
+
+      if(length(missing_cols) > 20) {
+
+        missing_txt <- paste0(paste(missing_cols[1:20], collapse = ", "), ", ...")
+
+      } else {
+
+        missing_txt <- paste(missing_cols, collapse = ", ")
+
+      }
+
+      stop(paste("Some variables specified by the user are missing from `x`:",
+                 missing_txt),
+           call. = FALSE)
+
+    }
+
+    x <- x[, variables, drop = FALSE]
+
+    class_check <- map_lgl(x, is.numeric)
+
+    if(any(!class_check)) {
+
+      error_vars <- names(x)[!class_check]
+
+      if(length(error_vars) > 20) {
+
+        err_var_txt <- paste0(paste(error_vars[1:20], collapse = ", "), ", ...")
+
+      } else {
+
+        err_var_txt <- paste(error_vars, collapse = ", ")
+
+      }
+
+      stop(paste("Some variables in `x` are not nomeric:", err_var_txt), call. = FALSE)
+
+    }
+
+    ## calculation of the activity scores ---------
+
+    get_activity(as.matrix(x),
+                 database = database,
+                 or_fun = or_fun,
+                 and_fun = and_fun,
+                 x_default = x_default,
+                 as_data_frame = as_data_frame,
+                 .parallel = .parallel, ...)
+
+  }
 
 # END --------

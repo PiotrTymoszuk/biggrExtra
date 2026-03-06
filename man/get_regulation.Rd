@@ -19,11 +19,15 @@ get_regulation(
   burn_in = 0,
   ci_method = c("bca", "perc"),
   seed = NULL,
-  .parallel = TRUE
+  .parallel = TRUE,
+  ...
 )
 }
 \arguments{
 \item{x}{a vector with gene regulation estimates named
+with Entrez ID identifiers.}
+
+\item{err}{a vector with errors gene regulation estimates named
 with Entrez ID identifiers.}
 
 \item{database}{an object of class \code{\link{reactDB}} created with
@@ -69,6 +73,8 @@ BCA ("bca", default) or percentile ("perc").}
 \item{seed}{a seed for the random number generator.}
 
 \item{.parallel}{logical, should th computation be run in parallel?}
+
+\item{...}{additional argument, currently none.}
 }
 \value{
 The function returns a list with the following elements:
