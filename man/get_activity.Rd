@@ -102,3 +102,6 @@ Palsson BO, Lewis NE. BiGG Models: A platform for integrating,
 standardizing and sharing genome-scale models.
 Nucleic Acids Res (2016) 44:D515–D522. doi:10.1093/NAR/GKV1049
 }
+\seealso{
+\code{\link[=extract_genes]{extract_genes()}}, \link{as_reactDB}
+}

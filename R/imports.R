@@ -10,9 +10,9 @@
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarise
 #' @importFrom dplyr arrange
-#' @importFrom dplyr top_n
 #' @importFrom dplyr ungroup
 #' @importFrom dplyr all_of
+#' @importFrom dplyr relocate
 #'
 #' @importFrom tibble rownames_to_column
 #' @importFrom tibble column_to_rownames
@@ -49,19 +49,15 @@
 #' @importFrom rlang `!!`
 #' @importFrom rlang is_environment
 #' @importFrom rlang new_environment
+#' @importFrom rlang is_function
 #'
 #' @importFrom stringi stri_detect
 #' @importFrom stringi stri_replace
-#' @importFrom stringi stri_split
 #' @importFrom stringi stri_replace_all
 #' @importFrom stringi stri_extract
 #' @importFrom stringi stri_extract_all
-#' @importFrom stringi stri_replace_first_fixed
 #'
-#' @importFrom generics calculate
 #' @importFrom generics components
-#' @importFrom generics fit
-#' @importFrom generics visualize
 #'
 #' @importFrom Rcpp sourceCpp
 #'
@@ -69,9 +65,6 @@
 #'
 #' @importFrom furrr future_map
 #' @importFrom furrr furrr_options
-#'
-#' @importFrom methods slot
-#' @importFrom methods hasArg
 #'
 #' @importFrom stats median
 #' @importFrom stats reorder

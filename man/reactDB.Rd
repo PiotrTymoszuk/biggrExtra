@@ -38,3 +38,6 @@ the reactions
 to evaluate the gene - reaction association rules
 }
 }
+\seealso{
+\code{\link[=extract_genes]{extract_genes()}}, \link{as_reactDB}
+}

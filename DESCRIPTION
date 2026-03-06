@@ -17,7 +17,6 @@ Imports:
     furrr,
     future,
     ggplot2,
-    methods, 
     microViz,
     purrr,
     Rcpp,
@@ -25,7 +24,6 @@ Imports:
     stats, 
     stringi, 
     tibble,
-    tidyr
 Depends: 
     R (>= 3.5.0), 
     generics, 

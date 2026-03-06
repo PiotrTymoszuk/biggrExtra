@@ -51,3 +51,6 @@ lower and upper bounds of confidence intervals of fold-regulation of reaction ac
 p-values adjusted for multiple testing.
 }
 }
+\seealso{
+\code{\link[=get_regulation]{get_regulation()}}
+}

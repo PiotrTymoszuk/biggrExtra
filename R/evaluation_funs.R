@@ -118,6 +118,8 @@
 #' @param .parallel logical, should th computation be run in parallel?
 #' @param ... additional argument, currently none.
 #'
+#' @seealso [extract_genes()], [as_reactDB]
+#'
 #' @md
 #' @export
 
@@ -487,6 +489,8 @@
 #' variables used for calculation of reaction activity scores. If `NULL`, all
 #' variables in `x` except of the sample identifier will be used.
 #' @param ... additional arguments, currently none.
+#'
+#' @seealso [extract_genes()], [as_reactDB]
 #'
 #' @export
 

@@ -28,6 +28,8 @@
 #' @param x a data frame with columns specified in Details or an R object.
 #' @param ... additional arguments, currently none.
 #'
+#' @seealso [extract_genes()], [as_reactDB]
+#'
 #' @md
 #' @export
 
@@ -129,6 +131,8 @@
 #' @param mc `NULL` or a numeric matrix with estimates of activity of metabolic
 #' reactions obtained in Monte-Carlo simulations.
 #' @param ... additional arguments, currently none.
+#'
+#' @seealso [get_regulation()]
 #'
 #' @md
 #' @export
