@@ -43,7 +43,7 @@
 
   }
 
-# Calculation of the regulation estimates with differential gene expression data -------
+# Regulation estimates of activity with differential gene expression data -------
 
 #' Calculate reaction activity estimates based on differential gene expression.
 #'
@@ -63,7 +63,8 @@
 #' the standard deviation.
 #'
 #' @return
-#' The function returns a list with the following elements:
+#' The function returns a list of class \code{\link{actiData}}
+#' with the following elements:
 #'
 #' * __reg__ : a data frame with reaction identifiers (`id`),
 #' fold-regulation estimates of reaction activity (`fold_reg`), estimates of
@@ -76,6 +77,12 @@
 #' * __mc__: returned only if `err_method = "mc"` and `return_mc = TRUE`, a numeric
 #' matrix with estimates of fold-regulation of reaction activity in iterations of
 #' the simulation algorithm. Reactions are in columns, iterations are in rows.
+#'
+#' @references
+#' King ZA, Lu J, Dräger A, Miller P, Federowicz S, Lerman JA, Ebrahim A,
+#' Palsson BO, Lewis NE. BiGG Models: A platform for integrating,
+#' standardizing and sharing genome-scale models.
+#' Nucleic Acids Res (2016) 44:D515–D522. doi:10.1093/NAR/GKV1049
 #'
 #' @inheritParams eval_rules
 #' @param err a vector with errors gene regulation estimates named
@@ -287,7 +294,7 @@
                        tibble(id = miss_reactions,
                               fold_reg = x_default))
 
-      if(is.null(err)) return(list(reg = reg_tbl))
+      if(is.null(err)) return(actiData(reg = annotate_reactions(reg_tbl, database)))
 
     }
 
@@ -326,7 +333,7 @@
                   "lower_ci", "upper_ci",
                   "z", "p_value", "p_adjusted")]
 
-      return(list(reg = reg_tbl))
+      return(actiData(reg = annotate_reactions(reg_tbl, database)))
 
     }
 
@@ -415,16 +422,16 @@
 
     mc_est[["p_adjusted"]] <- p.adjust(mc_p_vals, "BH")
 
-    mc_est <- as_tibble(mc_est)
+    mc_est <- as_tibble(annotate_reactions(mc_est, database))
 
     if(!return_mc) {
 
-      return(list(reg = mc_est))
+      return(actiData(reg = mc_est))
 
     } else {
 
-      return(list(reg = mc_est,
-                  mc = react_est_mtx))
+      return(actiData(reg = mc_est,
+                      mc = react_est_mtx))
 
     }
 
@@ -461,6 +468,12 @@
 #' samples are in rows.
 #' In the data frame output, sample identifiers are stored in the first column
 #' named `sample_id`.
+#'
+#' @references
+#' King ZA, Lu J, Dräger A, Miller P, Federowicz S, Lerman JA, Ebrahim A,
+#' Palsson BO, Lewis NE. BiGG Models: A platform for integrating,
+#' standardizing and sharing genome-scale models.
+#' Nucleic Acids Res (2016) 44:D515–D522. doi:10.1093/NAR/GKV1049
 #'
 #' @inheritParams get_regulation
 #' @param x a numeric matrix or a data frame with gene expression metrics; genes

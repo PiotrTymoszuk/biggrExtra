@@ -96,3 +96,9 @@ arithmetic with means, medians, minima or maxima of gene expression values,
 it's highly recommended to bring the expression values in \code{x} approximate
 equal scales, e.g. by computing Z-scores with \code{\link[microViz]{zScores}}.
 }
+\references{
+King ZA, Lu J, Dräger A, Miller P, Federowicz S, Lerman JA, Ebrahim A,
+Palsson BO, Lewis NE. BiGG Models: A platform for integrating,
+standardizing and sharing genome-scale models.
+Nucleic Acids Res (2016) 44:D515–D522. doi:10.1093/NAR/GKV1049
+}

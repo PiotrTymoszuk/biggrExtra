@@ -22,6 +22,12 @@
 #' The gene association rules have to operate with "bare" Entrez IDs without
 #' the version information (i.e. numbers after a dot).
 #'
+#' @references
+#' King ZA, Lu J, Dräger A, Miller P, Federowicz S, Lerman JA, Ebrahim A,
+#' Palsson BO, Lewis NE. BiGG Models: A platform for integrating,
+#' standardizing and sharing genome-scale models.
+#' Nucleic Acids Res (2016) 44:D515–D522. doi:10.1093/NAR/GKV1049
+#'
 #' @return a data frame of class \code{\link{reactDB}} containing reaction
 #' IDs (`id`), reaction names (`name`), subsystem information (`subsystem`),
 #' list of gene identifiers (`entrez_id`) and a list of expressions to be

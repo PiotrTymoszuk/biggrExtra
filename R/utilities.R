@@ -109,4 +109,34 @@
 
   }
 
+# Annotation of reaction identifiers ---------
+
+#' Annotate reaction identifiers with information from a `reactDB` database.
+#'
+#' @description
+#' Appends a data frame with identifiers of metabolic reactions with
+#' reaction names and Recon subsystem information.
+#' Intended for internal use only.
+#'
+#' @return the input data frame appended with columns `name` and `subsystem` with
+#' reaction names and subsystem assignment.
+#'
+#' @inheritParams get_regulation
+#' @param x a data frame with column `id` with identifiers of reactions.
+
+  annotate_reactions <- function(x, database) {
+
+    stopifnot(is.data.frame(x))
+    stopifnot("id" %in% names(x))
+    stopifnot(is_reactDB(database))
+
+    id <- NULL
+    name <- NULL
+    subsystem <- NULL
+
+    relocate(left_join(x, database[, c("id", "name", "subsystem")], by = "id"),
+             id, name, subsystem)
+
+  }
+
 # END ------

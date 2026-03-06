@@ -5,15 +5,18 @@
 \alias{is_reactDB}
 \title{Database of reaction annotation: \code{reactDB} class.}
 \usage{
-reactDB(x)
+reactDB(x, ...)
 
 is_reactDB(x)
 }
 \arguments{
-\item{x}{a data frame with columns specified in Details.}
+\item{x}{a data frame with columns specified in Details or an R object.}
+
+\item{...}{additional arguments, currently none.}
 }
 \value{
-a data frame of class \code{reactDB}.
+\code{reactDB()}: a data frame of class \code{reactDB} described in Details;
+\code{is_reactDB()}: a logical value indicating it an object is an instance of \code{reactDB} class.
 }
 \description{
 Constructs an instance of a reaction annotation database data frame with
@@ -25,13 +28,13 @@ The function conducts basic validation for conformity with reaction
 evaluation tools.
 The input and output data frames have the following columns:
 \itemize{
-\item \strong{id}: reaction identifier beginning with \code{"R_"} string.
-\item \strong{name}: character strings with reaction names.
-\item \strong{subsystem}: character strings with names of Recon subsystems.
-\item \strong{gene_association}: character strings with gene - reaction association rules.
+\item \strong{id}: reaction identifier beginning with \code{"R_"} string
+\item \strong{name}: character strings with reaction names
+\item \strong{subsystem}: character strings with names of Recon subsystems
+\item \strong{gene_association}: character strings with gene - reaction association rules
 \item \strong{entrez_id}: a column with lists of Entrez IDs of genes associated with
-the reactions.
+the reactions
 \item \strong{exprs}: a column with \code{NULL}, R symbols or R language expressions used
-to evaluate the gene - reaction association rules.
+to evaluate the gene - reaction association rules
 }
 }

@@ -86,6 +86,11 @@
 
   ## error derived from normal distribution
 
+  tst_bare_estimates <-
+    get_regulation(x = tst_x,
+                   scale = "log2",
+                   database = recon2_db)
+
   get_regulation(x = tst_x,
                  err = tst_err,
                  scale = "log2",

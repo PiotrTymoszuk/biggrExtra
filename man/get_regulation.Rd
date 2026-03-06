@@ -77,7 +77,8 @@ BCA ("bca", default) or percentile ("perc").}
 \item{...}{additional argument, currently none.}
 }
 \value{
-The function returns a list with the following elements:
+The function returns a list of class \code{\link{actiData}}
+with the following elements:
 \itemize{
 \item \strong{reg} : a data frame with reaction identifiers (\code{id}),
 fold-regulation estimates of reaction activity (\code{fold_reg}), estimates of
@@ -105,4 +106,10 @@ of the estimates of differential gene expression.
 In the later case, the differential gene expression estimate serves as the
 distribution mean and the error of differential gene expression serves as
 the standard deviation.
+}
+\references{
+King ZA, Lu J, Dräger A, Miller P, Federowicz S, Lerman JA, Ebrahim A,
+Palsson BO, Lewis NE. BiGG Models: A platform for integrating,
+standardizing and sharing genome-scale models.
+Nucleic Acids Res (2016) 44:D515–D522. doi:10.1093/NAR/GKV1049
 }
