@@ -698,4 +698,27 @@
 
   }
 
+# `build_geneSBML` deprecated, for compatibility --------
+
+#' Create a SBML model from gene Entrez IDs (not active anymore).
+#'
+#' @description
+#' Function `bulid_geneSBML()` is not active anymore and was replaced by
+#' much more robust \code{\link{get_regulation}} with a slightly different
+#' interface and output.
+#' Calling `bulid_geneSBML()` returns `NULL` with a warning.
+#'
+#' @inheritParams get_regulation
+#'
+#' @export
+
+  build_geneSBML <- function(x, ...) {
+
+    warning("The function is not active anymore, please use `get_regulation()` instead.",
+            call. = FALSE)
+
+    return(NULL)
+
+  }
+
 # END --------
