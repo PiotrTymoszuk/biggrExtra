@@ -120,7 +120,7 @@
     transmute(as_tibble(result),
               reaction_set = .data[["reaction_set"]],
               n_total_reaction_set = .data[["n_x_total"]],
-              subsytem = .data[["entry_name"]],
+              subsystem = .data[["entry_name"]],
               n_total_subsystem = .data[["n_entry"]],
               n_intersect = .data[["n_intersect"]],
               or = .data[["or"]],

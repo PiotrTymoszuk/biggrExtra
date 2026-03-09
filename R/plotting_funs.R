@@ -541,7 +541,9 @@
                                            .data[[plot_variable]],
                                            -.data[[plot_variable]]),
                                 y = reorder(.data[["axis_label"]],
-                                            .data[[plot_variable]]),
+                                            ifelse(.data[["regulation"]] == "activated",
+                                                   .data[[plot_variable]],
+                                                   -.data[[plot_variable]])),
                                 fill = .data[["regulation"]])) +
         geom_bar(stat = "identity",
                  color = bar_rim_color, ...) +
