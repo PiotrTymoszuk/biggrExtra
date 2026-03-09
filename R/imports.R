@@ -17,6 +17,8 @@
 #' @importFrom tibble rownames_to_column
 #' @importFrom tibble column_to_rownames
 #'
+#' @importFrom tidyr pivot_longer
+#'
 #' @importFrom purrr map
 #' @importFrom purrr compact
 #' @importFrom purrr map_chr
@@ -31,17 +33,16 @@
 #'
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_vline
-#' @importFrom ggplot2 geom_bar
-#' @importFrom ggplot2 scale_fill_manual
-#' @importFrom ggplot2 scale_color_manual
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 labs
-#' @importFrom ggplot2 scale_y_discrete
-#' @importFrom ggplot2 geom_smooth
 #' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 geom_smooth
 #' @importFrom ggplot2 geom_line
-#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 geom_violin
+#' @importFrom ggplot2 geom_vline
+#' @importFrom ggplot2 geom_hline
+#'
+#' @importFrom ggplot2 position_jitter
+#' @importFrom ggplot2 is.theme
+#' @importFrom ggplot2 labs
 #'
 #' @importFrom rlang set_names
 #' @importFrom rlang `.data`
@@ -73,6 +74,8 @@
 #' @importFrom stats qnorm
 #' @importFrom stats pnorm
 #' @importFrom stats na.omit
+#'
+#' @importFrom microViz theme_micro
 #'
 #' @useDynLib biggrExtra
 

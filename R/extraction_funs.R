@@ -36,15 +36,16 @@
 #' @param x a data frame with the following obligatory columns: `id` with reaction
 #' identifiers, `name` with reaction names, `subsystem` with subsystem assignment,
 #' and `gene_association` with character strings with gene association rules.
-#' @param react_id BiGG reaction ID, with or without the leading 'R_' string.
-#' Defaults to `NULL`, which means that all reactions are mapped to genes.
+#' @param reactions a character vector with BiGG reaction IDs, with or without
+#' the leading 'R_' string. Defaults to `NULL`, which means that all reactions
+#' are considered.
 #' @param inspect_errors logical. If `TRUE`, the function returns parsing errors.
 #' @param ... additional arguments passed to `extract_genes()`.
 #'
 #' @export
 
   extract_genes <- function(x,
-                            react_id = NULL,
+                            reactions = NULL,
                             inspect_errors = FALSE) {
 
     ## entry control ----------
@@ -85,19 +86,19 @@
 
     }
 
-    if(!is.null(react_id)) {
+    if(!is.null(reactions)) {
 
-      stopifnot(is.character(react_id))
+      stopifnot(is.character(reactions))
 
-      react_id <-
-        ifelse(!stri_detect(react_id, regex = '^R_'),
-               paste0('R_', react_id), react_id)
+      reactions <-
+        ifelse(!stri_detect(reactions, regex = '^R_'),
+               paste0('R_', reactions), reactions)
 
-      x <- filter(x, .data[["id"]] %in% react_id)
+      x <- filter(x, .data[["id"]] %in% reactions)
 
       if(nrow(x) == 0) {
 
-        stop("No reactions to precess after filtering with `react_id`.",
+        stop("No reactions to precess after filtering with `reactions`.",
              call. = FALSE)
 
       }

@@ -82,7 +82,7 @@
   draw_matrix[1:10, 1:10]
   dim(draw_matrix)
 
-# Testing of internal evaluation tools: differential gene expression ----------
+# Testing of evaluation tools: differential gene expression ----------
 
   ## error derived from normal distribution
 
@@ -120,7 +120,7 @@
                    err_method = "mc",
                    return_mc = TRUE)
 
-# Testing of internal evaluation tools: gene expression data --------
+# Testing of evaluation tools: gene expression data --------
 
   brca_activity_scores <-
     get_activity(x = brca_z_scores,
@@ -151,5 +151,32 @@
                   adj_method = "BH",
                   as_data_frame = TRUE) %>%
     as_tibble
+
+# Diagnostic plots ----------
+
+  tst_norm_estimates %>%
+    plot_errors(fun = log2,
+                line_color = "orangered3",
+                fill = "gray80")
+
+  tst_mc_estimates %>%
+    plot_errors(subsystems = "Fatty acid oxidation",
+                fun = sqrt,
+                line_color = "orangered3",
+                line_alpha = 0.5,
+                fill = "gray80")
+
+  tst_norm_estimates %>% plot_mc
+
+  tst_mc_estimates %>%
+    plot_mc(subsystems = "Oxidative phosphorylation",
+            fun = sqrt)
+
+  tst_mc_estimates %>%
+    plot_mc(subsystems = "Oxidative phosphorylation",
+            fun = sqrt,
+            type = "violin",
+            point_alpha = 0.15,
+            plot_title = "Oxidative phosphorylation")
 
 # END --------

@@ -19,7 +19,7 @@
     ## header contents
 
     n_reactions <- nrow(x[["reg"]])
-    n_subsystems <- length(na.omit(x[["reg"]][["subsystem"]]))
+    n_subsystems <- length(unique(na.omit(x[["reg"]][["subsystem"]])))
 
     cat(paste("`reactDB` object with activity estimates of", n_reactions,
               "in", n_subsystems, "subsystems"))
@@ -315,6 +315,116 @@
                     .data[["regulation"]] != "ns",
                     !is.na(.data[["regulation"]])),
              regulation)
+
+  }
+
+# Sub-setting: selection of reactions and subsystems ---------
+
+#' Select reactions or subsystems.
+#'
+#' @description
+#' Select reactions or subsystems in an \code{\link{actiData}}.
+#'
+#' @return an \code{\link{actiData}} object with reactions and/or subsystems
+#' of interest.
+#'
+#' @param .data a \code{\link{actiData}} object.
+#' @param reactions a character vector with BiGG IDs of metabolic reactions.
+#' @param subsystems a character vector with names of metabolic subsystems.
+#' @param ... additional arguments passed to methods.
+#'
+#' @seealso [get_regulation()]
+#'
+#' @export select.actiData
+#' @export
+
+  select.actiData <- function(.data,
+                              reactions = NULL,
+                              subsystems = NULL, ...) {
+
+    ## input control ---------
+
+    stopifnot(is_actiData(.data))
+
+    reacts_present <- unique(.data[["reg"]][["id"]])
+    subs_present <- unique(.data[["reg"]][["subsystem"]])
+
+    if(!is.null(reactions)) {
+
+      stopifnot(is.character(reactions))
+
+      reacts_missing <- setdiff(reactions, reacts_present)
+
+      if(length(reacts_missing) > 0) {
+
+        if(length(reacts_missing) > 20) {
+
+          react_txt <-
+            paste0(paste(reacts_missing[1:20], collapse = ", "), ", ...")
+
+        } else {
+
+          react_txt <- paste(reacts_missing, collapse = ", ")
+
+        }
+
+        warning(paste("Some reaction were not fount in the object:",
+                      react_txt),
+                call. = FALSE)
+
+      }
+
+    } else {
+
+      reactions <- reacts_present
+
+    }
+
+    if(!is.null(subsystems)) {
+
+      stopifnot(is.character(subsystems))
+
+      subs_missing <- setdiff(subsystems, subs_present)
+
+      if(length(subs_missing) > 0) {
+
+        if(length(subs_missing) > 20) {
+
+          sub_txt <-
+            paste0(paste(subs_missing[1:20], collapse = ", "), ", ...")
+
+        } else {
+
+          sub_txt <- paste(subs_missing, collapse = ", ")
+
+        }
+
+        warning(paste("Some reaction were not fount in the object:",
+                      sub_txt),
+                call. = FALSE)
+
+      }
+
+    } else {
+
+      subsystems <- subs_present
+
+    }
+
+    ## filtering -----------
+
+    sub_reactions <- filter(.data[["reg"]],
+                            .data[["subsystem"]] %in% subsystems)$id
+
+    reactions <- intersect(sub_reactions, reactions)
+
+    .data[["reg"]] <- filter(.data[["reg"]],
+                             .data[["id"]] %in% reactions)
+
+    if("mc" %in% names(.data)) .data[["mc"]] <- .data[["mc"]][, reactions]
+
+
+    return(.data)
 
   }
 

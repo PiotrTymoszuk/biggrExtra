@@ -5,7 +5,7 @@
 \alias{as_reactDB}
 \title{Extract gene identifiers from reaction annotations.}
 \usage{
-extract_genes(x, react_id = NULL, inspect_errors = FALSE)
+extract_genes(x, reactions = NULL, inspect_errors = FALSE)
 
 as_reactDB(x, ...)
 }
@@ -14,8 +14,9 @@ as_reactDB(x, ...)
 identifiers, \code{name} with reaction names, \code{subsystem} with subsystem assignment,
 and \code{gene_association} with character strings with gene association rules.}
 
-\item{react_id}{BiGG reaction ID, with or without the leading 'R_' string.
-Defaults to \code{NULL}, which means that all reactions are mapped to genes.}
+\item{reactions}{a character vector with BiGG reaction IDs, with or without
+the leading 'R_' string. Defaults to \code{NULL}, which means that all reactions
+are considered.}
 
 \item{inspect_errors}{logical. If \code{TRUE}, the function returns parsing errors.}
 
