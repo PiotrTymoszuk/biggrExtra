@@ -14,10 +14,10 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-0398-6034"))
            )
 Imports: 
+    fastTest,
     furrr,
     future,
     ggplot2,
-    microViz,
     purrr,
     Rcpp,
     rlang,

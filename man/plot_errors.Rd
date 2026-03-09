@@ -23,7 +23,7 @@ plot_errors(
   hline_color = "black",
   hline_type = "dashed",
   hline_alpha = 1,
-  cust_theme = microViz::theme_micro(),
+  cust_theme = theme_classic(),
   plot_title = NULL,
   plot_subtitle = NULL,
   x_lab = "regulation estimate",

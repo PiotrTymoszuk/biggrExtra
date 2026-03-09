@@ -15,7 +15,7 @@ plot_numbers(
   show_all = FALSE,
   labeller_fun = identity,
   show_n_total = TRUE,
-  cust_theme = microViz::theme_micro(),
+  cust_theme = theme_classic(),
   plot_title = NULL,
   plot_subtitle = NULL,
   x_lab = NULL,

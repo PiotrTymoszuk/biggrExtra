@@ -21,7 +21,7 @@ plot_mc(
   zero_line_color = "black",
   zero_line_type = "dashed",
   zero_line_alpha = 1,
-  cust_theme = microViz::theme_micro(),
+  cust_theme = theme_classic(),
   plot_title = NULL,
   plot_subtitle = NULL,
   x_lab = NULL,

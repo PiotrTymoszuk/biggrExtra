@@ -183,8 +183,10 @@
          point_alpha = 0.15,
          plot_title = "Oxidative phosphorylation")
 
+  tst_mc_estimates <- tst_mc_estimates %>%
+    identify_regulated
+
   tst_mc_estimates %>%
-    identify_regulated %>%
     plot(plot_type = "numbers",
          scale = "percent",
          type = "plus_minus",
@@ -197,5 +199,14 @@
 
 # Subsystem enrichment ---------
 
+  tst_enrichment <- tst_mc_estimates %>%
+    suba(type = "random",
+         n_iter = 1000,
+         .parallel = TRUE)
+
+  tst_enrichment %>%
+    filter(p_adjusted < 0.05,
+           or >= 1.44) %>%
+    blast(reaction_set)
 
 # END --------

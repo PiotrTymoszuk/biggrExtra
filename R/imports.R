@@ -2,6 +2,7 @@
 
 #' @importFrom dplyr filter
 #' @importFrom dplyr mutate
+#' @importFrom dplyr transmute
 #' @importFrom dplyr count
 #' @importFrom dplyr tibble
 #' @importFrom dplyr select
@@ -45,6 +46,7 @@
 #' @importFrom ggplot2 position_jitter
 #' @importFrom ggplot2 is.theme
 #' @importFrom ggplot2 labs
+#' @importFrom ggplot2 theme_classic
 #'
 #' @importFrom rlang set_names
 #' @importFrom rlang `.data`
@@ -77,7 +79,7 @@
 #' @importFrom stats pnorm
 #' @importFrom stats na.omit
 #'
-#' @importFrom microViz theme_micro
+#' @importFrom fastTest f_enrichment
 #'
 #' @useDynLib biggrExtra
 
