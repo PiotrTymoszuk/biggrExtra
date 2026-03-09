@@ -7,13 +7,13 @@
 \method{select}{actiData}(.data, reactions = NULL, subsystems = NULL, ...)
 }
 \arguments{
+\item{.data}{a \code{\link{actiData}} object.}
+
 \item{reactions}{a character vector with BiGG IDs of metabolic reactions.}
 
 \item{subsystems}{a character vector with names of metabolic subsystems.}
 
 \item{...}{additional arguments passed to methods.}
-
-\item{x}{a \code{\link{actiData}} object.}
 }
 \value{
 an \code{\link{actiData}} object with reactions and/or subsystems

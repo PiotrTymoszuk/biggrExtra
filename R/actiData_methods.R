@@ -428,4 +428,63 @@
 
   }
 
+# Plotting -----------
+
+#' Diagnostic plots and visualization of reaction activity in `actiData` objects.
+#'
+#' @description
+#' Diagnostic plots and visualization of estimates of regulation of reaction
+#' activity - the plotting method for \code{\link{actiData}} objects.
+#'
+#' @details
+#' The `plot()` method for \code{\link{actiData}} objects generates the following
+#' types of plots specified by `plot_type` argument:
+#'
+#' * `plot_type = "errors"`: scatter plot of regulation estimates and their errors
+#' made with \code{\link{plot_errors}}.
+#'
+#' * `plot_type = "numbers"`: bar/stack plots of numbers or percentages of
+#' differentially regulated
+#' reactions in subsystems generated with \code{\link{plot_numbers}}. Please note
+#' that the regulation status of metabolic reactions in `x` has to be determined
+#' prior to plotting by calling \code{\link{identify_regulated}}.
+#'
+#' * `plot_type == "mc"`: plots of reactions regulation estimates in single
+#' iterations of the Monte Carlo simulation with \code{\link{plot_mc}}.
+#'
+#' @return a `ggplot` graphic object.
+#'
+#' @param x an \code{\link{actiData}} object.
+#' @param plot_type plot type, see Details.
+#' @param ... additional arguments passed to the plotting functions specified
+#' in Details.
+#'
+#' @seealso [get_regulation()]
+#'
+#' @md
+#'
+#' @export plot.actiData
+#' @export
+
+  plot.actiData <- function(x,
+                            plot_type = c("errors",
+                                          "numbers",
+                                          "mc"), ...) {
+
+    ## input control --------
+
+    stopifnot(is_actiData(x))
+
+    plot_type <- match.arg(plot_type[1],
+                           c("errors", "numbers", "mc"))
+
+    ## re-routing ----------
+
+    switch(plot_type,
+           errors = plot_errors(x, ...),
+           numbers = plot_numbers(x, ...),
+           mc = plot_mc(x, ...))
+
+  }
+
 # END ---------

@@ -385,4 +385,182 @@
 
   }
 
+# Plotting of numbers of significantly regulate reactions ---------
+
+#' Bar/stack plots with numbers of significantly activated and inhibited reactions.
+#'
+#' @description
+#' Representation of numbers or percentages of differentially regulated
+#' reactions in subsystems as bar or stack plot.
+#'
+#' @details
+#' Please make sure that the object contains activity regulation status
+#' information.
+#' If not, please call \code{\link{identify_regulated}} prior to
+#' counting the significant effects.
+#'
+#' The plot type is determined by `type` argument:
+#' `"plus_minus"` (bar plot, inhibited reaction as "negative" numbers),
+#' `"bar"` (bar plot, dodged bars for inhibited and activated reactions),
+#' `"stack"` plot.
+#'
+#' @return a `ggplot` graphic.
+#'
+#' @inheritParams plot_errors
+#' @param scale type of the frequency statistic to be shown in the plot:
+#' count (default) or percentage of reactions in the subsystem.
+#' @param type type of the plot, see Details.
+#' @param show_all logical, should frequencies of all regulated reactions be
+#' presented in the plot together with counts/percentages for the subsystems?
+#' @param palette color palette: a named character vector with at least two elements
+#' specifying the colors for activated and inhibited reactions.
+#' @param bar_rim_color color of the bar's rim/line.
+#' @param show_n_total logical: if `TRUE`, total numbers of reactions in subsystems
+#' are displayed in the Y axis along with the subsystem names.
+#' @param labeller_fun a function used to transform subsystem names, e.g. into
+#' abbreviations, which are shown in the Y axis of the plot.
+#' @param fill_lab title of the fill scale.
+#' @param ... additional arguments passed to \code{\link[ggplot2]{geom_bar}}.
+#'
+#' @export
+
+  plot_numbers <- function(x,
+                           reactions = NULL,
+                           subsystems = NULL,
+                           scale = c("count", "percent"),
+                           type = c("plus_minus", "bar", "stack"),
+                           palette = c("activated" = "firebrick",
+                                       "inhibited" = "steelblue"),
+                           bar_rim_color = "black",
+                           show_all = FALSE,
+                           labeller_fun = identity,
+                           show_n_total = TRUE,
+                           cust_theme = microViz::theme_micro(),
+                           plot_title = NULL,
+                           plot_subtitle = NULL,
+                           x_lab = NULL,
+                           y_lab = "subsystem",
+                           fill_lab = "regulation\nstatus", ...) {
+
+    ## input control --------
+
+    if(!is_actiData(x)) stop("`x` has to be an `actiData` object.", call. = FALSE)
+
+    scale <- match.arg(scale[1], c("count", "percent"))
+
+    type <- match.arg(type[1], c("plus_minus", "bar", "stack"))
+
+    stopifnot(is.logical(show_all))
+    show_all <- show_all[1]
+
+    stopifnot(is.logical(show_n_total))
+    show_n_total <- show_n_total[1]
+
+    stopifnot(is.character(palette))
+
+    if(length(palette) < 2) {
+
+      stop("`palette` has to have at least two color names.", call. = FALSE)
+
+    }
+
+    palette <- palette[1:2]
+
+    if(!is_function(labeller_fun)) {
+
+      stop("`labeller_fun` has to be a function.", call = FALSE)
+
+    }
+
+    if(!is.null(cust_theme)) {
+
+      if(!is.theme(cust_theme)) {
+
+        stop("`cust_theme` has to be a `ggplot` theme object.", call. = FALSE)
+
+      }
+
+    }
+
+    ## plotting data --------
+
+    x <- select(x, reactions, subsystems)
+
+    count_data <- count_regulated(x)
+
+    if(!show_all) {
+
+      count_data <- filter(count_data, .data[["subsystem"]] != "all")
+
+    }
+
+    plot_variable <- switch(scale,
+                            count = "n",
+                            percent = "percent")
+
+    count_data[["axis_label"]] <- labeller_fun(count_data[["subsystem"]])
+
+    if(show_n_total) {
+
+      count_data[["axis_label"]] <-
+        paste(count_data[["axis_label"]],
+              count_data[["n_total"]],
+              sep = "\nn = ")
+
+    }
+
+    if(is.null(x_lab)) {
+
+      x_lab <- switch(scale,
+                      count = "number of reactions",
+                      percent = "% of subsystem reactions")
+
+    }
+
+    ## the plots ----------
+
+    if(type %in% c("bar", "stack")) {
+
+      pos_txt <- switch(type,
+                        bar = "dodge",
+                        stack = "stack")
+
+      number_plot <- ggplot(count_data,
+                            aes(x = .data[[plot_variable]],
+                                y = reorder(.data[["axis_label"]],
+                                            .data[[plot_variable]]),
+                                fill = .data[["regulation"]])) +
+        geom_bar(stat = "identity",
+                 color = bar_rim_color,
+                 position = pos_txt, ...)
+
+    } else {
+
+      number_plot <- ggplot(count_data,
+                            aes(x = ifelse(.data[["regulation"]] == "activated",
+                                           .data[[plot_variable]],
+                                           -.data[[plot_variable]]),
+                                y = reorder(.data[["axis_label"]],
+                                            .data[[plot_variable]]),
+                                fill = .data[["regulation"]])) +
+        geom_bar(stat = "identity",
+                 color = bar_rim_color, ...) +
+        scale_x_continuous(labels = abs)
+
+    }
+
+    if(!is.null(cust_theme)) number_plot <- number_plot + cust_theme
+
+    number_plot +
+      geom_vline(xintercept = 0) +
+      scale_fill_manual(values = palette,
+                        drop = FALSE) +
+      labs(title = plot_title,
+           subtitle = plot_subtitle,
+           x = x_lab,
+           y = y_lab,
+           fill = fill_lab)
+
+  }
+
 # END --------

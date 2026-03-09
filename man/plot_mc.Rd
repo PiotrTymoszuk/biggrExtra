@@ -77,8 +77,8 @@ displayed in the plots (\code{fold_reg = 1})?}
 
 \item{y_lab}{Y axis label.}
 
-\item{...}{additional arguments passed to \code{\link[ggplot]{geom_line}} and
-\code{\link[ggplot]{geom_violin}}.}
+\item{...}{additional arguments passed to \code{\link[ggplot2]{geom_line}} and
+\code{\link[ggplot2]{geom_violin}}.}
 }
 \value{
 a \code{ggplot} graphic.

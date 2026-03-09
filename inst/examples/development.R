@@ -155,28 +155,47 @@
 # Diagnostic plots ----------
 
   tst_norm_estimates %>%
-    plot_errors(fun = log2,
-                line_color = "orangered3",
-                fill = "gray80")
+    plot(plot_type = "errors",
+         fun = log2,
+         line_color = "orangered3",
+         fill = "gray80")
 
   tst_mc_estimates %>%
-    plot_errors(subsystems = "Fatty acid oxidation",
-                fun = sqrt,
-                line_color = "orangered3",
-                line_alpha = 0.5,
-                fill = "gray80")
+    plot(plot_type = "errors",
+         subsystems = "Fatty acid oxidation",
+         fun = sqrt,
+         line_color = "orangered3",
+         line_alpha = 0.5,
+         fill = "gray80")
 
   tst_norm_estimates %>% plot_mc
 
   tst_mc_estimates %>%
-    plot_mc(subsystems = "Oxidative phosphorylation",
-            fun = sqrt)
+    plot(plot_type = "mc",
+         subsystems = "Oxidative phosphorylation",
+         fun = sqrt)
 
   tst_mc_estimates %>%
-    plot_mc(subsystems = "Oxidative phosphorylation",
-            fun = sqrt,
-            type = "violin",
-            point_alpha = 0.15,
-            plot_title = "Oxidative phosphorylation")
+    plot(plot_type = "mc",
+         subsystems = "Oxidative phosphorylation",
+         fun = sqrt,
+         type = "violin",
+         point_alpha = 0.15,
+         plot_title = "Oxidative phosphorylation")
+
+  tst_mc_estimates %>%
+    identify_regulated %>%
+    plot(plot_type = "numbers",
+         scale = "percent",
+         type = "plus_minus",
+         subsystems = c("Oxidative phosphorylation",
+                        "Citric acid cycle",
+                        "Glycolysis/gluconeogenesis",
+                        "Fatty acid synthesis",
+                        "Fatty acid oxidation"),
+         plot_title = "Energy metabolism")
+
+# Subsystem enrichment ---------
+
 
 # END --------

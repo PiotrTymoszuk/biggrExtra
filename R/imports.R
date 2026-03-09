@@ -39,7 +39,9 @@
 #' @importFrom ggplot2 geom_violin
 #' @importFrom ggplot2 geom_vline
 #' @importFrom ggplot2 geom_hline
-#'
+#' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 scale_fill_manual
+#' @importFrom ggplot2 scale_x_continuous
 #' @importFrom ggplot2 position_jitter
 #' @importFrom ggplot2 is.theme
 #' @importFrom ggplot2 labs
