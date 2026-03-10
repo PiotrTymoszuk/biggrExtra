@@ -560,6 +560,264 @@ per default indicated in the Y axis:
 
 ### Calculation of activity scores of metabolic reactions with gene expression data
 
+#### Analysis data
+
+In the second example, we'll use function `get_activity()` to compute activity scores of 
+metabolic reactions of the Recon 2.2. knowledge model given RNA sequencing data - 
+please note that they are not differential gene expression estimates handled in 
+the previous section! 
+
+In the example, we're going to use, apart from `biggrExtra` few other packages. 
+`tidyverse` package bundle will provide tools for transformation of tabular data, 
+[`microViz`](github.com/PiotrTymoszuk/microViz) provides the gene expression data 
+an plotting functions, [fastTest](https://github.com/PiotrTymoszuk/fastTest/) implements 
+statistical hypothesis tests, and [hgnc](https://github.com/patterninstitute/hgnc/) 
+will be use for conversion of gene symbols to Entrez identifiers (Entrez ID).
+
+```r
+
+  library(tidyverse)
+
+  library(microViz) ## data and plots
+  library(fastTest) ## statistical hypothesis tests
+  library(hgnc) ## gene symbol - Entrez ID conversion
+
+  library(biggrExtra)
+
+```
+
+The gene expression data comes as `brca` data set with `microViz` package. 
+Gene expression variables in this data frame are named with official gene symbols 
+which will be turned to Entrez IDs.
+The expression signals on an identity scale will be transformed with $log_2$ function 
+and subsequently converted to Z-scores (function `zScores` from `microViz` package) 
+used to calculate reactions' activities: 
+
+```r
+
+ ## annotation of gene symbols with Entrez IDs:
+  ## a data frame and a named vector used to convert
+  ## names of the gene expression data
+
+  hgnc_annotation <- import_hgnc_dataset() %>%
+    select(symbol, entrez_id) %>%
+    filter(complete.cases(.))
+
+  hgnc_entrez_vector <- set_names(hgnc_annotation$entrez_id,
+                                  hgnc_annotation$symbol)
+
+  ## selection of genes, re-naming with EntrezIDs,
+  ## log2 transformation of the expression data
+
+  brca_data <- brca_data %>%
+    column_to_rownames("sample_id") %>%
+    select(any_of(hgnc_annotation$symbol))
+
+  names(brca_data) <- hgnc_entrez_vector[names(brca_data)]
+
+  brca_data <-
+    log2(as.matrix(brca_data) + 1) %>%
+    as.data.frame
+
+  ## Z-scores used for calculation of the reaction activity scores
+
+  brca_z_scores <- zScores(brca_data)
+
+```
+
+```r
+
+> brca_z_scores[1:10, 1:5]
+                                                  1      503538      29974          2      144571
+MBC-MBCProject_GvHkH2Hk-Tumor-SM-AZ5HV   0.91776430  2.04386562 -0.3486670  0.2894184 -0.62886304
+MBC-MBCProject_N4srsKsr-Tumor-SM-CGMGK   1.01208902  0.38140127 -0.3486670  0.6438838  0.61464010
+MBC-MBCProject_N4srsKsr-Tumor-SM-CGLTK   0.85115081 -0.94149510 -0.1066801 -0.6819644  0.32245867
+MBC-MBCProject_4MF1FlFQ-Tumor-SM-CGM4M   0.48329068  1.27063624 -0.2537039 -1.2351579 -0.56352870
+MBC-MBCProject_4MF1FlFQ-Tumor-SM-AZ5CU   0.34291247 -0.70928909 -0.3324544  0.3481451 -0.83224107
+MBC-MBCProject_wAiri7fp-Tumor-SM-AZ5DH   0.20610103  0.07184055 -0.3324544  0.9246825 -0.46768283
+MBC-MBCProject_K7f6fdUz-Tumor-SM-AZ5MA   3.83486896  2.24056095  4.8715174  0.5529890 -0.49935079
+RP-1156_MBCProject_3vhkhAcY_T1_v2_Exome  0.53749425 -0.91744052 -0.3650410 -0.3722746 -0.97445372
+MBC-MBCProject_xBfJfri9-Tumor-SM-CGLAP  -0.08864884  1.15366347 -0.3324544 -1.1186011 -0.53129776
+MBC-MBCProject_xBfJfri9-Tumor-SM-CGLGZ   0.04991536 -0.70928909 -0.3650410  1.5080102 -0.02313201
+
+```
+For calculation of reaction activity scores we also need a database of gene - reaction 
+association rules as R language object. 
+We can generate it easily by calling `as_reactDB()` for the `Recon2_2D` data frame 
+delivered with our `biggrExtra` package. 
+The reaction database can be created by calling `as_reactDB()` for it: 
+
+```r 
+
+ recon2_2_db <- as_reactDB(Recon2_2D)
+
+```
+```r
+
+> recon2_2_db
+
+`reactDB` object with 7785 reactions and 4742 gene - reaction association rules
+
+# A tibble: 7,785 × 6
+   id                name                                                    subsystem         gene_association entrez_id exprs     
+ * <chr>             <chr>                                                   <chr>             <chr>            <list>    <named li>
+ 1 R_13DAMPPOX       1,3-Diaminopropane:oxygen oxidoreductase (deaminating)  beta-Alanine met… 314 or 8639 or … <chr [3]> <language>
+ 2 R_1a_24_25VITD2Hm 1-alpha-Vitamin D-24,25-hydroxylase (D2)                Vitamin D metabo… NA               <NULL>    <NULL>    
+ 3 R_1a_24_25VITD3Hm 1-alpha-Vitamin D-24,25-hydroxylase (D3)                Vitamin D metabo… NA               <NULL>    <NULL>    
+ 4 R_1a_25VITD2Hm    1-alpha,24R,25-Vitamin D-hydroxylase (D2)               Vitamin D metabo… NA               <NULL>    <NULL>    
+ 5 R_1a_25VITD3Hm    1-alpha,24R,25-Vitamin D-hydroxylase (D3)               Vitamin D metabo… NA               <NULL>    <NULL>    
+ 6 R_1PPDCRp         delta1-piperideine-2-carboxylate reductase, perixosomal Lysine metabolism NA               <NULL>    <NULL>    
+ 7 R_24_25VITD2Hm    24R-Vitamin D-25-hydroxylase (D2)                       Vitamin D metabo… 1591             <chr [1]> <sym>     
+ 8 R_24_25VITD3Hm    24R-Vitamin D-25-hydroxylase (D3)                       Vitamin D metabo… 1591             <chr [1]> <sym>     
+ 9 R_25VITD2Hm       1-alpha-Vitamin D-25-hydroxylase (D2)                   Vitamin D metabo… 1594             <chr [1]> <sym>     
+10 R_25VITD3Hm       1-alpha-Vitamin D-25-hydroxylase (D3)                   Vitamin D metabo… 1594             <chr [1]> <sym>     
+# ℹ 7,775 more rows
+# ℹ Use `print(n = ...)` to see more rows
+
+```
+
+#### Calculation of reaction activity scores
+
+Scores of activity of reactions are obtained with `get_activity()` which we provide with 
+expression Z-scores (data frame: samples in rows, genes in columns) 
+and the reaction database object. 
+If `as_data_frame = TRUE`, the function returns a data frame, whose first column 
+named `sample_id` stores sample identifiers, the remaining columns are named after 
+reaction identifiers and are filled with activity scores: 
+
+```r
+
+  brca_activity_scores <-
+    get_activity(x = brca_z_scores,
+                 database = recon2_2_db,
+                 as_data_frame = TRUE)
+
+  reaction_variables <- names(brca_activity_scores)[-1] ### to be used later in tests
+
+```
+
+Subsequently, we'll append the data frame of activity scores with information 
+on tumor histology used later in statistical hypothesis tests: 
+
+```r
+
+  ## appending the activity scores with clinical meta-data
+
+  brca_activity_scores <-
+    inner_join(brca[, c("sample_id",
+                        "histology")],
+               brca_activity_scores,
+               by = "sample_id")
+
+```
+
+```r
+
+> brca_activity_scores
+
+# A tibble: 157 × 4,744
+   sample_id  histology R_13DAMPPOX R_24_25VITD2Hm R_24_25VITD3Hm R_25VITD2Hm R_25VITD3Hm R_2AMACHYD R_2AMACSULT  R_2HBO R_2OXOADOXm
+   <chr>      <fct>           <dbl>          <dbl>          <dbl>       <dbl>       <dbl>      <dbl>       <dbl>   <dbl>       <dbl>
+ 1 MBC-MBCPr… IDC            0.0622        -0.0605        -0.0605      0.999       0.999      0.647       0.855  -0.377      -1.03  
+ 2 MBC-MBCPr… MIXED_ID…     -0.356         -0.271         -0.271       0.145       0.145     -0.777       0.790  -0.488       0.418 
+ 3 MBC-MBCPr… ILC           -0.425         -0.562         -0.562      -0.371      -0.371     -1.39        0.646  -0.507       0.420 
+ 4 MBC-MBCPr… IDC           -0.684          0.0171         0.0171      1.89        1.89       0.196       0.440  -0.271      -0.0367
+ 5 MBC-MBCPr… IDC           -0.0510        -0.114         -0.114       0.0789      0.0789    -0.352      -0.354   0.310      -0.186 
+ 6 MBC-MBCPr… IDC           -0.0660        -0.316         -0.316      -0.766      -0.766     -0.0702      1.14    0.162      -0.346 
+ 7 MBC-MBCPr… CARCINOMA     -0.409         -0.493         -0.493       0.288       0.288      1.14        0.0103  0.465       0.849 
+ 8 RP-1156_M… IDC           -0.598         -0.562         -0.562       0.225       0.225      2.23        0.332  -0.794      -1.81  
+ 9 MBC-MBCPr… IDC           -0.654         -0.411         -0.411      -0.313      -0.313     -0.0143      0.575  -0.180      -0.892 
+10 MBC-MBCPr… IDC            0.0673        -0.184         -0.184      -0.572      -0.572     -0.384       0.475  -0.0244      0.0241
+# ℹ 147 more rows
+# ℹ 4,733 more variables: R_34DHOXPEGOX <dbl>, R_34DHPHAMT <dbl>, R_34DHPLACOX <dbl>, R_34DHPLACOX_NADP_ <dbl>,
+#   R_34DHXMANDACOX <dbl>, R_34DHXMANDACOX_NADP_ <dbl>, R_34HPPOR <dbl>, R_3DSPHR <dbl>, R_3HAO <dbl>, R_3HBCDm <dbl>,
+#   R_3HKYNAKGAT <dbl>, R_3HLYTCL <dbl>, R_3HPCOAHYD <dbl>, R_3HXKYNDCL <dbl>, R_3HXKYNOXDA <dbl>, R_3M4HDXPAC <dbl>,
+#   R_3MOX4HOXPGALDOX <dbl>, R_3MOX4HOXPGALDOX_NADP_ <dbl>, R_3MOXTYROX <dbl>, R_3NTD7l <dbl>, R_3SALACBOXL <dbl>,
+#   R_3SALATAi <dbl>, R_3SALATAim <dbl>, R_41R1H2MAE12BOOX <dbl>, R_41R2A1H12BOOX <dbl>, R_42A12BOOX <dbl>, R_4HGLSDm <dbl>,
+#   R_4HOXPACDOX_NADP_ <dbl>, R_4NPHSULT <dbl>, R_5ADTSTSTERONESULT <dbl>, R_5HLTDL <dbl>, R_5HOXINDACTO2OX <dbl>, …
+# ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names
+
+```
+
+#### Comparing reaction activity scores 
+
+Reaction activity scores can be compared between analysis groups of interest by a 
+range of statistical hypothesis test. 
+In our example, we'll compare the activity scores between two clinically relevant 
+histological types of breast cancer, invasive ductal carcinoma (IDC) and invasive 
+luminal carcinoma (ILC), with Mann-Whitney test with biserial rank correlation coefficient 
+r as the effect size metric. 
+The tests will be conducted with function `f_wilcox_test` from `fastTest` package, 
+p-values will be corrected for multiple testing with the false discovery rate method: 
+
+```r
+
+  ## differences in activity scores between IDC and ILC
+  ## Mann-Whitney test
+
+  brca_test_data <- brca_activity_scores %>%
+    filter(histology %in% c("IDC", "ILC"))
+
+  brca_histology_test <-
+    f_wilcox_test(brca_test_data[, reaction_variables],
+                  f = brca_test_data$histology,
+                  as_data_frame = TRUE,
+                  safely = TRUE,
+                  adj_method = "BH") %>%
+    as_tibble
+
+```
+
+We'll define significant differences in reaction activity scores by 
+FDR-corrected p < 0.05 and large effect size of the difference, i.e. $|r| \geq 0.5$: 
+
+```r
+
+  ## significant differences in activity scores:
+  ## pFDR < 0.05 and large (abs(r) > 0.5)
+
+  brca_histology_significant <- brca_histology_test %>%
+    filter(p_adjusted < 0.05,
+           abs(biserial_r) >= 0.5) %>%
+    .$variable
+
+```
+
+```r
+
+> length(brca_histology_significant)
+[1] 138
+
+> brca_histology_significant[1:10]
+ [1] "R_ACCOALm" "R_ACSm"    "R_ATPH1e"  "R_ATPH2e"  "R_BTND1"   "R_BTND1n"  "R_BTNDe"   "R_BTNDm"   "R_CSNAT2m" "R_CSNAT2x"
+
+```
+Finally, we can visualize activity scores of the significant reactions in a heat map 
+using function `heat_map()` from `microViz` package: 
+
+```r
+
+  ## visualization of the activity score in histological
+  ## subtypes in a heat map
+
+  brca_histo_heat_map <- brca_test_data %>%
+    heat_map(variables = brca_histology_significant,
+             split_fct = "histology",
+             normalize = FALSE,
+             midpoint = 0,
+             hide_x_axis_text = TRUE,
+             limits = c(-4, 4),
+             oob = scales::squish,
+             x_lab = "cancer sample",
+             y_lab = "metabolic reaction",
+             fill_lab = "activity\nscore",
+             plot_title = "Predicted differences in metabolism, IDC and ILC") +
+    theme(strip.background.y = element_blank(),
+          strip.text.y = element_blank(),
+          axis.text.y = element_blank())
+
+```
+
 
 ## References
 

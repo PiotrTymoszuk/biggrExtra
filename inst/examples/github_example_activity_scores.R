@@ -13,10 +13,9 @@
 
 # analysis data ------
 
-  brca_data <- brca %>%
-    column_to_rownames("sample_id")
-
-  ## annotation of gene symbols with Entrez IDs
+  ## annotation of gene symbols with Entrez IDs:
+  ## a data frame and a named vector used to convert
+  ## names of the gene expression data
 
   hgnc_annotation <- import_hgnc_dataset() %>%
     select(symbol, entrez_id) %>%
@@ -29,6 +28,7 @@
   ## log2 transformation of the expression data
 
   brca_data <- brca_data %>%
+    column_to_rownames("sample_id") %>%
     select(any_of(hgnc_annotation$symbol))
 
   names(brca_data) <- hgnc_entrez_vector[names(brca_data)]
@@ -41,12 +41,12 @@
 
   brca_z_scores <- zScores(brca_data)
 
-# Calculation of the activity scores ---------
-
   ## reaction annotation database created from
   ## the `Recon2_2D` data set from `biggrExtra` package
 
   recon2_2_db <- as_reactDB(Recon2_2D)
+
+# Calculation of the activity scores ---------
 
   brca_activity_scores <-
     get_activity(x = brca_z_scores,
@@ -59,17 +59,13 @@
 
   brca_activity_scores <-
     inner_join(brca[, c("sample_id",
-                        "patient_id",
-                        "timepoint",
-                        "metastasis",
-                        "histology",
-                        "er_status")],
+                        "histology")],
                brca_activity_scores,
                by = "sample_id")
 
 # comparison of activity scores between major histologies ----------
 
-  ## differences in activity scores between major histologies:
+  ## differences in activity scores between IDC and ILC
   ## Mann-Whitney test
 
   brca_test_data <- brca_activity_scores %>%
@@ -100,7 +96,7 @@
              normalize = FALSE,
              midpoint = 0,
              hide_x_axis_text = TRUE,
-             limits = c(-5, 5),
+             limits = c(-4, 4),
              oob = scales::squish,
              x_lab = "cancer sample",
              y_lab = "metabolic reaction",
