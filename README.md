@@ -374,7 +374,7 @@ Our experience with `get_regulation()` function tells that the error inflation
 may be more efficiently addressed by modification of differential gene expression analysis 
 methods than by tuning of arguments of `get_regulation()`.
 
----scatter plot of estimates and errors-----
+<img width="775" height="547" alt="estimates_errors" src="https://github.com/user-attachments/assets/4e0ae1ec-da10-4ed6-abae-ca598db6e83f" />
 
 #### Enrichment analyses for metabolic subsystems
 
@@ -506,7 +506,7 @@ significant_subs_or_plot <- significant_subsystems %>%
 
 ```
 
-----plot of OR and p-values-------
+<img width="775" height="547" alt="subsystem_enrichment_or" src="https://github.com/user-attachments/assets/bf5d2d78-6570-4e30-a11a-b672b75c6cc4" />
 
 To explore these significantly enriched metabolic subsystems, we can tally 
 their differentially regulated reactions by selecting the subsystems of interest 
@@ -556,8 +556,7 @@ per default indicated in the Y axis:
 
 ```
 
-----bar plot of reaction numbers ------
-
+<img width="886" height="725" alt="subsystem_enrichment_percentages" src="https://github.com/user-attachments/assets/e9ab7c29-f362-47ce-8e78-f3ddbd813aa2" />
 
 ### Calculation of activity scores of metabolic reactions with gene expression data
 
