@@ -5,7 +5,7 @@
 # packages --------
 
   library(tidyverse)
-  library(biggrExtra) ## modeling of metabolism
+  library(biggrExtra) ### modeling of metabolism
 
 # analysis data ------
 
@@ -22,12 +22,12 @@
   dge_estimates[1:10]
   dge_errors[1:10]
 
-# Calculation of fold changes of reaction activity --------
-
   ## reaction annotation database created from
   ## the `Recon2_2D` data set from `biggrExtra` package
 
   recon2_2_db <- as_reactDB(Recon2_2D)
+
+# Calculation of fold changes of reaction activity --------
 
   ## predictions of fold-changes in reaction activity,
   ## errors derived from Monte Carlo simulations
@@ -47,7 +47,9 @@
   ## (pFDR < 0.05, at least 1.1-fold change in activity)
 
   reaction_regulation <- reaction_regulation %>%
-    transform_estimates(fun = log2, prefix = "log2_") %>%
+    transform_estimates(fun = log2, prefix = "log2_")
+
+  reaction_regulation <- reaction_regulation %>%
     identify_regulated(p_type = "adjusted",
                        p_cutoff = 0.05,
                        fold_cutoff = 1.1)
@@ -67,10 +69,12 @@
 
   ## identification of significantly over-represented
   ## metabolic subsystems among activated and inhibited reactions
-  ## by Fisher's exact test
+  ## by random sampling test
 
   subsystem_enrichment <- reaction_regulation %>%
-    suba(type = "fisher")
+    suba(type = "random",
+         n_iter = 2000,
+         .parallel = TRUE)
 
   ## significantly enriched subsystems:
   ## OR >= 2 and pFDR < 0.05
@@ -84,13 +88,13 @@
   significant_subs_or_plot <- significant_subsystems %>%
     ggplot(aes(x = or,
                y = reorder(subsystem, or),
-               size = -log10(p_adjusted + 1e-80),
+               size = -log10(p_adjusted),
                fill = reaction_set)) +
     facet_grid(reaction_set ~ .,
                scales = "free",
                space = "free") +
     geom_point(shape = 21) +
-    scale_size_area(labels = function(x) signif(10^-(x - 1e-80), 2),
+    scale_size_area(labels = function(x) signif(10^-(x), 2),
                     max_size = 4.5,
                     name = "pFDR") +
     scale_fill_manual(values = c("activated" = "firebrick",
@@ -98,7 +102,7 @@
                       name = "reaction set") +
     theme_classic() +
     theme(axis.title.y = element_blank()) +
-    labs(title = "Significantly enriched RECON metabolic subsystems",
+    labs(title = "RECON metabolic subsystems, collagen hi vs low",
          x = "enrichment, OR")
 
   ## counts of differentially regulated reaction
@@ -111,11 +115,10 @@
   ## visualization of percentages of activated and inhibited reactions
   ## in the significantly enriched subsystems
 
-  significant_subs_percent_plot <-
-    reaction_regulation %>%
+  significant_subs_percent_plot <- reaction_regulation %>%
     select(subsystems = significant_subsystems$subsystem) %>%
     plot(plot_type = "numbers",
          scale = "percent",
-         plot_title = "Significantly enriched RECON metabolic subsystems")
+         plot_title = "RECON metabolic subsystems, collagen hi vs low")
 
 # END ---------

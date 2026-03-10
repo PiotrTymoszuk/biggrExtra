@@ -18,7 +18,7 @@ A data frame with 36118 rows and 8 variables.
 }
 }
 \source{
-TCGA prostate adenocarcinoma data set. Publication pending.
+\href{https://pubmed.ncbi.nlm.nih.gov/38851995/}{Heidegger et al. 2025}
 }
 \usage{
 data(tcga_data)
@@ -29,4 +29,11 @@ Collagen^hi^ and Collagen^low^ tumors. The estimates are log~2~
 fold regulation estimates versus the Collagen^low^ tumor subtype computed by
 linear regression. The values were calculated for the prostate cancer TCGA
 (The Cancer Gene Atlas) data set.
+}
+\references{
+Heidegger I, Frantzi M, Salcher S, Tymoszuk P, Martowicz A, Gomez-Gomez E,
+Blanca A, Lendinez Cano G, Latosinska A, Mischak H, et al.
+Prediction of Clinically Significant Prostate Cancer by a Specific Collagen-related
+Transcriptome, Proteome, and Urinome Signature.
+Eur Urol Oncol (2024) doi:10.1016/J.EUO.2024.05.014
 }

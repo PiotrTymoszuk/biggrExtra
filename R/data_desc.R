@@ -21,7 +21,14 @@
 #' * __p_adjusted__: FDR-corrected p value.
 #' * __regulation__: regulation sign.
 #'
-#' @source TCGA prostate adenocarcinoma data set. Publication pending.
+#' @source [Heidegger et al. 2025](https://pubmed.ncbi.nlm.nih.gov/38851995/)
+#'
+#' @references
+#' Heidegger I, Frantzi M, Salcher S, Tymoszuk P, Martowicz A, Gomez-Gomez E,
+#' Blanca A, Lendinez Cano G, Latosinska A, Mischak H, et al.
+#' Prediction of Clinically Significant Prostate Cancer by a Specific Collagen-related
+#' Transcriptome, Proteome, and Urinome Signature.
+#' Eur Urol Oncol (2024) doi:10.1016/J.EUO.2024.05.014
 #'
 #' @docType data
 #'
@@ -37,7 +44,7 @@
 #'
 #' @description
 #' Cleared and harmonized reaction annotation data for
-#' [Recon2 model of human metabolism](https://www.ebi.ac.uk/biomodels/services/download/get-files/MODEL1109130000/2/MODEL1109130000_url.xml).
+#' [Recon2 model of human metabolism](https://www.ebi.ac.uk/biomodels/MODEL1109130000).
 #' The data were processed with the [RECON_processing](https://github.com/PiotrTymoszuk/RECON_processing)
 #' R pipeline.
 #'
@@ -53,8 +60,14 @@
 #' * __reference__ literature references
 #' * __notes__ additional comments
 #'
+#' @references
+#' Thiele I, Swainston N, Fleming RMT, Hoppe A, Sahoo S, Aurich MK,
+#' Haraldsdottir H, Mo ML, Rolfsson O, Stobbe MD, et al.
+#' A community-driven global reconstruction of human metabolism.
+#' Nat Biotechnol 2013 315 (2013) 31:419–425. doi:10.1038/nbt.2488
+#'
 #' @source
-#' [biomodels](https://www.ebi.ac.uk/biomodels/services/download/get-files/MODEL1109130000/2/MODEL1109130000_url.xml) and
+#' [biomodels](https://www.ebi.ac.uk/biomodels/MODEL1109130000) and
 #' [RECON_processing GitHub respository](https://github.com/PiotrTymoszuk/RECON_processing) .
 #'
 #' @docType data
@@ -70,7 +83,7 @@
 #'
 #' @description
 #' Cleared and harmonized reaction annotation data for
-#' [Recon2.2 model of human metabolism](https://www.biomodels.org/biomodels/services/download/get-files/MODEL1603150001/2/MODEL1603150001_url.xml).
+#' [Recon2.2 model of human metabolism](https://www.ebi.ac.uk/biomodels/MODEL1603150001).
 #' The data were processed with the [RECON_processing](https://github.com/PiotrTymoszuk/RECON_processing)
 #' R pipeline.
 #'
@@ -81,10 +94,16 @@
 #' * __name__ reaction name
 #' * __gene_association__ gene - reaction association rules as character strings
 #' * __subsystem__ Recon metabolic subsystem
-#' * __confidence_level__ confidence level for the gene - reaction association rule#'
+#' * __confidence_level__ confidence level for the gene - reaction association rule
+#'
+#' @references
+#' Swainston N, Smallbone K, Hefzi H, Dobson PD, Brewer J, Hanscho M, Zielinski DC,
+#' Ang KS, Gardiner NJ, Gutierrez JM, et al.
+#' Recon 2.2: from reconstruction to model of human metabolism.
+#' Metabolomics (2016) 12. doi:10.1007/S11306-016-1051-4
 #'
 #' @source
-#' [biomodels](https://www.ebi.ac.uk/biomodels/services/download/get-files/MODEL1109130000/2/MODEL1109130000_url.xml) and
+#' [biomodels](https://www.ebi.ac.uk/biomodels/MODEL1603150001) and
 #' [RECON_processing GitHub respository](https://github.com/PiotrTymoszuk/RECON_processing) .
 #'
 #' @docType data

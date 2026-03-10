@@ -12,11 +12,11 @@ a data frame with 7785 rows and 7 columns:
 \item \strong{name} reaction name
 \item \strong{gene_association} gene - reaction association rules as character strings
 \item \strong{subsystem} Recon metabolic subsystem
-\item \strong{confidence_level} confidence level for the gene - reaction association rule#'
+\item \strong{confidence_level} confidence level for the gene - reaction association rule
 }
 }
 \source{
-\href{https://www.ebi.ac.uk/biomodels/services/download/get-files/MODEL1109130000/2/MODEL1109130000_url.xml}{biomodels} and
+\href{https://www.ebi.ac.uk/biomodels/MODEL1603150001}{biomodels} and
 \href{https://github.com/PiotrTymoszuk/RECON_processing}{RECON_processing GitHub respository} .
 }
 \usage{
@@ -24,7 +24,13 @@ data(Recon2_2D)
 }
 \description{
 Cleared and harmonized reaction annotation data for
-\href{https://www.biomodels.org/biomodels/services/download/get-files/MODEL1603150001/2/MODEL1603150001_url.xml}{Recon2.2 model of human metabolism}.
+\href{https://www.ebi.ac.uk/biomodels/MODEL1603150001}{Recon2.2 model of human metabolism}.
 The data were processed with the \href{https://github.com/PiotrTymoszuk/RECON_processing}{RECON_processing}
 R pipeline.
+}
+\references{
+Swainston N, Smallbone K, Hefzi H, Dobson PD, Brewer J, Hanscho M, Zielinski DC,
+Ang KS, Gardiner NJ, Gutierrez JM, et al.
+Recon 2.2: from reconstruction to model of human metabolism.
+Metabolomics (2016) 12. doi:10.1007/S11306-016-1051-4
 }

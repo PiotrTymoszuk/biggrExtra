@@ -19,7 +19,7 @@ a data frame with 7440 rows and 10 columns:
 }
 }
 \source{
-\href{https://www.ebi.ac.uk/biomodels/services/download/get-files/MODEL1109130000/2/MODEL1109130000_url.xml}{biomodels} and
+\href{https://www.ebi.ac.uk/biomodels/MODEL1109130000}{biomodels} and
 \href{https://github.com/PiotrTymoszuk/RECON_processing}{RECON_processing GitHub respository} .
 }
 \usage{
@@ -27,7 +27,13 @@ data(Recon2D)
 }
 \description{
 Cleared and harmonized reaction annotation data for
-\href{https://www.ebi.ac.uk/biomodels/services/download/get-files/MODEL1109130000/2/MODEL1109130000_url.xml}{Recon2 model of human metabolism}.
+\href{https://www.ebi.ac.uk/biomodels/MODEL1109130000}{Recon2 model of human metabolism}.
 The data were processed with the \href{https://github.com/PiotrTymoszuk/RECON_processing}{RECON_processing}
 R pipeline.
+}
+\references{
+Thiele I, Swainston N, Fleming RMT, Hoppe A, Sahoo S, Aurich MK,
+Haraldsdottir H, Mo ML, Rolfsson O, Stobbe MD, et al.
+A community-driven global reconstruction of human metabolism.
+Nat Biotechnol 2013 315 (2013) 31:419–425. doi:10.1038/nbt.2488
 }

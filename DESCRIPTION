@@ -1,10 +1,10 @@
 Package: biggrExtra
 Type: Package
-Title: Extension of the BiGGR Package for Gne Regulation Data 
+Title: Prediction of Metabolism Activity with Transcriptome Data
 Version: 1.0.0
 Maintainer: Piotr Tymoszuk <piotr.s.tymoszuk@gmail.com>
-Description: Enables for construction of BiGGR objects containing metabolome 
-    data based on gene expression regulation estimates.
+Description: Modeling of activity of metabolic reactions with Recon knowledge 
+    models and gene expression data
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true

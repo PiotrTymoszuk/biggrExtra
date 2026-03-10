@@ -21,7 +21,7 @@
     n_reactions <- nrow(x[["reg"]])
     n_subsystems <- length(unique(na.omit(x[["reg"]][["subsystem"]])))
 
-    cat(paste("`reactDB` object with activity estimates of", n_reactions,
+    cat(paste("`actiData` object with activity estimates of", n_reactions,
               "in", n_subsystems, "subsystems"))
     cat("\n\n")
     print(x[["reg"]])
@@ -221,6 +221,12 @@
     if(!is_function(fun)) stop("`fun` has to be a function.", call. = FALSE)
 
     if(!is.character(prefix)) stop("`prefix` has to be a character string.", call. = FALSE)
+
+    if(length(prefix) == 0 | prefix == "") {
+
+      stop("`prefix` has to be a non-empty character string.", call. = FALSE)
+
+    }
 
     ## transformation ---------
 
