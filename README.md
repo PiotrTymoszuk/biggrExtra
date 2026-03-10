@@ -797,7 +797,7 @@ using function `heat_map()` from `microViz` package:
 
 ```r
 
-  ## visualization of the activity score in histological
+  ## visualization of the activity scores in histological
   ## subtypes in a heat map
 
   brca_histo_heat_map <- brca_test_data %>%
@@ -818,6 +818,7 @@ using function `heat_map()` from `microViz` package:
 
 ```
 
+<img width="775" height="547" alt="activity_scores_brca_heat_map" src="https://github.com/user-attachments/assets/8bd2dbec-b5b6-4fb9-8c6d-ee60f11c3822" />
 
 ## References
 
