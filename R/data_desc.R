@@ -50,12 +50,12 @@
 #'
 #' @format
 #' a data frame with 7440 rows and 10 columns:
-#' * __id__ and __metaid__ reaction identifiers
+#' * __id__ and __metaid__ BiGG reaction identifiers
 #' * __sboTerm__ Systems Biology Ontology term
 #' * __name__ reaction name
 #' * __gene_association__ gene - reaction association rules as character strings
 #' * __subsystem__ Recon metabolic subsystem
-#' * __ec_number__ enzyme's EC identifier
+#' * __ec_number__ EC identifier of enzymatic reaction
 #' * __confidence_level__ confidence level for the gene - reaction association rule
 #' * __reference__ literature references
 #' * __notes__ additional comments
@@ -68,7 +68,7 @@
 #'
 #' @source
 #' [biomodels](https://www.ebi.ac.uk/biomodels/MODEL1109130000) and
-#' [RECON_processing GitHub respository](https://github.com/PiotrTymoszuk/RECON_processing) .
+#' [RECON_processing GitHub repository](https://github.com/PiotrTymoszuk/RECON_processing) .
 #'
 #' @docType data
 #'
@@ -89,7 +89,7 @@
 #'
 #' @format
 #' a data frame with 7785 rows and 7 columns:
-#' * __id__ and __metaid__ reaction identifiers
+#' * __id__ and __metaid__ BiGG reaction identifiers
 #' * __sboTerm__ Systems Biology Ontology term
 #' * __name__ reaction name
 #' * __gene_association__ gene - reaction association rules as character strings
@@ -104,7 +104,7 @@
 #'
 #' @source
 #' [biomodels](https://www.ebi.ac.uk/biomodels/MODEL1603150001) and
-#' [RECON_processing GitHub respository](https://github.com/PiotrTymoszuk/RECON_processing) .
+#' [RECON_processing GitHub repository](https://github.com/PiotrTymoszuk/RECON_processing) .
 #'
 #' @docType data
 #'
@@ -112,6 +112,45 @@
 #'
 #' @md
 #' @usage data(Recon2_2D)
+
+  NULL
+
+#' Reaction association rules for the Human-GEM 2.0.0 model.
+#'
+#' @description
+#' Cleared and harmonized reaction annotation data for
+#' [Human-GEM 2.0.0 model of metabolism](https://github.com/SysBioChalmers/Human-GEM).
+#' The data were processed with the [RECON_processing](https://github.com/PiotrTymoszuk/RECON_processing)
+#' R pipeline.
+#'
+#' @format
+#' a data frame with 12931 rows and 8 columns:
+#' * __id__ Metabolic Atlas reaction identifiers
+#' * __name__ reaction name
+#' * __ec_number__ EC identifier of enzymatic reactions
+#' * __gene_association__ gene - reaction association rules as character strings
+#' * __subsystem__ Metabolic Atlas subsystem
+#' * __confidence_level__ confidence level for the gene - reaction association rule
+#' * __reference__ literature references
+#' * __miriam__ cross-references to other databases
+#'
+#' @references
+#' Robinson JL, Kocabaş P, Wang H, Cholley PE, Cook D, Nilsson A, Anton M,
+#' Ferreira R, Domenzain I, Billa V, et al.
+#' An atlas of human metabolism. Sci Signal (2020) 13:eaaz1482–eaaz1482.
+#' doi:10.1126/SCISIGNAL.AAZ1482
+#'
+#'
+#' @source
+#' [GitHub repository of Metabolic Atlas](https://github.com/SysBioChalmers/Human-GEM) and
+#' [RECON_processing GitHub repository](https://github.com/PiotrTymoszuk/RECON_processing)
+#'
+#' @docType data
+#'
+#' @name Human_GEM_2_0_0
+#'
+#' @md
+#' @usage data(Human_GEM_2_0_0)
 
   NULL
 

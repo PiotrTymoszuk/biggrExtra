@@ -25,6 +25,7 @@
 
   recon2_db <- extract_genes(Recon2D)
   recon2_2_db <- extract_genes(Recon2_2D)
+  human_gem <- extract_genes(Human_GEM_2_0_0)
 
 # Prostate cancer differential gene expression estimates in the tests -------
 
@@ -104,6 +105,13 @@
                    database = recon2_2_db,
                    err_method = "norm")
 
+  tst_norm_gem_estimates <-
+    get_regulation(x = tst_x,
+                   err = tst_err,
+                   scale = "log2",
+                   database = human_gem,
+                   err_method = "norm")
+
   ## errors derived from MC simulations
 
   get_regulation(x = tst_x,
@@ -124,7 +132,7 @@
 
   brca_activity_scores <-
     get_activity(x = brca_z_scores,
-                 database = recon2_2_db,
+                 database = human_gem,
                  as_data_frame = TRUE,
                  .parallel = FALSE)
 

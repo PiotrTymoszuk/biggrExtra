@@ -7,12 +7,12 @@
 \format{
 a data frame with 7440 rows and 10 columns:
 \itemize{
-\item \strong{id} and \strong{metaid} reaction identifiers
+\item \strong{id} and \strong{metaid} BiGG reaction identifiers
 \item \strong{sboTerm} Systems Biology Ontology term
 \item \strong{name} reaction name
 \item \strong{gene_association} gene - reaction association rules as character strings
 \item \strong{subsystem} Recon metabolic subsystem
-\item \strong{ec_number} enzyme's EC identifier
+\item \strong{ec_number} EC identifier of enzymatic reaction
 \item \strong{confidence_level} confidence level for the gene - reaction association rule
 \item \strong{reference} literature references
 \item \strong{notes} additional comments
@@ -20,7 +20,7 @@ a data frame with 7440 rows and 10 columns:
 }
 \source{
 \href{https://www.ebi.ac.uk/biomodels/MODEL1109130000}{biomodels} and
-\href{https://github.com/PiotrTymoszuk/RECON_processing}{RECON_processing GitHub respository} .
+\href{https://github.com/PiotrTymoszuk/RECON_processing}{RECON_processing GitHub repository} .
 }
 \usage{
 data(Recon2D)

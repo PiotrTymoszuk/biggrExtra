@@ -1,7 +1,7 @@
 Package: biggrExtra
 Type: Package
 Title: Prediction of Metabolism Activity with Transcriptome Data
-Version: 1.0.0
+Version: 1.1.0
 Maintainer: Piotr Tymoszuk <piotr.s.tymoszuk@gmail.com>
 Description: Modeling of activity of metabolic reactions with Recon knowledge 
     models and gene expression data

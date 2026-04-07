@@ -7,7 +7,7 @@
 \format{
 a data frame with 7785 rows and 7 columns:
 \itemize{
-\item \strong{id} and \strong{metaid} reaction identifiers
+\item \strong{id} and \strong{metaid} BiGG reaction identifiers
 \item \strong{sboTerm} Systems Biology Ontology term
 \item \strong{name} reaction name
 \item \strong{gene_association} gene - reaction association rules as character strings
@@ -17,7 +17,7 @@ a data frame with 7785 rows and 7 columns:
 }
 \source{
 \href{https://www.ebi.ac.uk/biomodels/MODEL1603150001}{biomodels} and
-\href{https://github.com/PiotrTymoszuk/RECON_processing}{RECON_processing GitHub respository} .
+\href{https://github.com/PiotrTymoszuk/RECON_processing}{RECON_processing GitHub repository} .
 }
 \usage{
 data(Recon2_2D)
