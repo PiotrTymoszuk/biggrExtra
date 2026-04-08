@@ -117,14 +117,14 @@
   get_regulation(x = tst_x,
                  err = tst_err,
                  scale = "log2",
-                 database = recon2_db,
+                 database = recon2_2_db,
                  err_method = "mc")
 
   tst_mc_estimates <-
     get_regulation(x = tst_x,
                    err = tst_err,
                    scale = "log2",
-                   database = recon2_2_db,
+                   database = human_gem,
                    err_method = "mc",
                    return_mc = TRUE)
 
