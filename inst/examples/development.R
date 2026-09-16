@@ -217,6 +217,14 @@
            or >= 1.44) %>%
     blast(reaction_set)
 
+  tst_enrichment_fisher <- tst_mc_estimates %>%
+    suba(type = "fisher")
+
+  tst_enrichment_fisher %>%
+    filter(p_value < 0.05,
+           or >= 1.44) %>%
+    blast(reaction_set)
+
 # Testing with a problematic model with just single significant reaction -------
 
   #load("./inst/examples/tst.RData")

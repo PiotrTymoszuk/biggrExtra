@@ -118,6 +118,7 @@
     n_total_subsystem <- NULL
     n_intersect <- NULL
     or <- NULL
+    se_log_or <- NULL
     lower_ci <- NULL
     upper_ci <- NULL
     p_value <- NULL
@@ -130,6 +131,8 @@
               n_total_subsystem = .data[["n_entry"]],
               n_intersect = .data[["n_intersect"]],
               or = .data[["or"]],
+              log_or = log(.data[["or"]]),
+              se_log_or = if(type == "fisher") .data[["se_log_or"]] else NULL,
               lower_ci = if(type == "fisher") NULL else .data[["lower_ci"]],
               upper_ci = if(type == "fisher") NULL else .data[["upper_ci"]],
               p_value = .data[["p_value"]],
