@@ -74,7 +74,13 @@
 
     signif_reactions <-
       compact(map(signif_reactions,
-                  function(x) if(length(x) == 0) NULL else x))
+                  function(x) if(length(x) < 2) NULL else x))
+
+    if(length(signif_reactions) == 0) {
+
+      stop("Not enough significantly regulated reactions.", call. = FALSE)
+
+    }
 
     ### dictionary of reactions in the subsystems
     ### vector with identifiers of all reactions

@@ -217,4 +217,12 @@
            or >= 1.44) %>%
     blast(reaction_set)
 
+# Testing with a problematic model with just single significant reaction -------
+
+  #load("./inst/examples/tst.RData")
+
+  #tst %>%
+   # suba("fisher") %>%
+    #count(reaction_set)
+
 # END --------
